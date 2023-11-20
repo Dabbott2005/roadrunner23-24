@@ -46,7 +46,7 @@ public class redRightRR extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "redProp.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
+    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/redProp.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
             "redProp",
@@ -99,7 +99,72 @@ public class redRightRR extends LinearOpMode {
                     //set depo to close
                     //set LIFT to DOWN
                 })
+                .strafeLeft(27)
+
+                .build();
+
+        TrajectorySequence traj_middle = drive.trajectorySequenceBuilder(startPose)
+                .lineToSplineHeading(new Pose2d(23,-24,(Math.toRadians(180))))
+                .addTemporalMarker(0, () -> {
+                    //set GripRotate to DOWN
+                })
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                    //open claw
+                })
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(2,() -> {
+                    //set GripRotate to UP
+                })
+                .build();
+        TrajectorySequence traj_backdrop_middle = drive.trajectorySequenceBuilder(traj_middle.end())
+                .addTemporalMarker(1.5,() -> {
+                    //set LIFT to UP
+                })
+                .lineTo(new Vector2d(49, -36))
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    //set depo to OPEN
+                })
+                .forward(3)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    //set depo to close
+                    //set LIFT to DOWN
+                })
                 .strafeLeft(25)
+
+                .build();
+
+        TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
+                .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
+                .addTemporalMarker(0, () -> {
+                    //set GripRotate to DOWN
+                })
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                    //open claw
+                })
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(2,() -> {
+                    //set GripRotate to UP
+                })
+                .build();
+
+        TrajectorySequence traj_backdrop_right = drive.trajectorySequenceBuilder(traj_left.end())
+                .addTemporalMarker(1.5,() -> {
+                    //set LIFT to UP
+                })
+                .lineTo(new Vector2d(49, -42))
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    //set depo to OPEN
+                })
+                .forward(3)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    //set depo to close
+                    //set LIFT to DOWN
+                })
+                .strafeLeft(19)
 
                 .build();
 
@@ -118,10 +183,9 @@ public class redRightRR extends LinearOpMode {
                 telemetryTfod();
 
 
-
                 // Push telemetry to the Driver Station.
                 telemetry.update();
-                visionPortal.stopStreaming();
+
                 // Save CPU resources; can resume streaming when needed.
 
 
@@ -133,8 +197,11 @@ public class redRightRR extends LinearOpMode {
 
 
         // Save more CPU resources when camera is no longer needed.
-        visionPortal.close();
+
         while (opModeIsActive()  && !isStopRequested()) {
+            visionPortal.stopStreaming();
+            visionPortal.close();
+            visionPortal.setProcessorEnabled(tfod,false);
             switch (currentState) {
                 case TRAJ_LEFT:
                     drive.followTrajectorySequenceAsync(traj_left);
@@ -148,49 +215,42 @@ public class redRightRR extends LinearOpMode {
                         drive.followTrajectorySequenceAsync(traj_backdrop_left);
                     }
                     break;
-                //case TRAJ_RIGHT:
+                case TRAJ_RIGHT:
+                    drive.followTrajectorySequenceAsync(traj_right);
                     // Check if the drive class is busy following the trajectory
-                    // Move on to the next state, TURN_1, once finished
-                    //if (!drive.isBusy()) {
-                        //currentState = State.TRAJ_BACKDROP_RIGHT;
-                        //drive.turnAsync();
-                    //}
-                    //break;
-                //case TURN_1:
+                    // Move on to the next state
+                    if (!drive.isBusy()) {
+                        currentState = State.TRAJ_BACKDROP_RIGHT;
+                        drive.followTrajectorySequenceAsync(traj_backdrop_right);
+                    }
+                    break;
+                case TRAJ_MIDDLE:
                     // Check if the drive class is busy turning
                     // If not, move onto the next state, TRAJECTORY_3, once finished
-                    //if (!drive.isBusy()) {
-                        //currentState = State.TRAJECTORY_3;
-                       // drive.followTrajectoryAsync(trajectory3);
-                   // }
-                   // break;
-                //case TRAJECTORY_3:
+                    if (!drive.isBusy()) {
+                        currentState = State.TRAJ_BACKDROP_MIDDLE;
+                        drive.followTrajectorySequenceAsync(traj_backdrop_middle);
+                    }
+                    break;
+                case TRAJ_BACKDROP_LEFT:
                     // Check if the drive class is busy following the trajectory
                     // If not, move onto the next state, WAIT_1
-                    //if (!drive.isBusy()) {
-                        //currentState = State.WAIT_1;
+                    if (!drive.isBusy()) {
+                        currentState = State.IDLE;
 
-                        // Start the wait timer once we switch to the next state
-                        // This is so we can track how long we've been in the WAIT_1 state
-                        //waitTimer1.reset();
-                    //}
-                    //break;
-                //case WAIT_1:
-                    // Check if the timer has exceeded the specified wait time
-                    // If so, move on to the TURN_2 state
-                    //if (waitTimer1.seconds() >= waitTime1) {
-                        //currentState = State.TURN_2;
-                        //drive.turnAsync(turnAngle2);
-                    //}
-                    //break;
-                //case TURN_2:
-                    // Check if the drive class is busy turning
-                    // If not, move onto the next state, IDLE
-                    // We are done with the program
-                    //if (!drive.isBusy()) {
-                        //currentState = State.IDLE;
-                    //}
-                    //break;
+                    }
+                    break;
+                case TRAJ_BACKDROP_MIDDLE:
+                    if (!drive.isBusy()) {
+                        currentState = State.IDLE;
+                    }
+                    break;
+                case TRAJ_BACKDROP_RIGHT:
+                    if (!drive.isBusy()) {
+                        currentState = State.IDLE;
+                    }
+
+                    break;
                 case IDLE:
                     // Do nothing in IDLE
                     // currentState does not change once in IDLE
@@ -218,8 +278,8 @@ public class redRightRR extends LinearOpMode {
                 // choose one of the following:
                 //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
                 //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                .setModelAssetName(TFOD_MODEL_ASSET)
-                //.setModelFileName(TFOD_MODEL_FILE)
+                //.setModelAssetName(TFOD_MODEL_ASSET)
+                .setModelFileName(TFOD_MODEL_FILE)
 
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
@@ -248,7 +308,7 @@ public class redRightRR extends LinearOpMode {
         //builder.enableLiveView(true);
 
         // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
+        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
 
         // Choose whether or not LiveView stops if no processors are enabled.
         // If set "true", monitor shows solid orange screen if no processors enabled.
@@ -265,7 +325,7 @@ public class redRightRR extends LinearOpMode {
         tfod.setMinResultConfidence(0.75f);
 
         // Disable or re-enable the TFOD processor at any time.
-        //visionPortal.setProcessorEnabled(tfod, true);
+        visionPortal.setProcessorEnabled(tfod, true);
 
     }   // end method initTfod()
 
@@ -299,12 +359,15 @@ public class redRightRR extends LinearOpMode {
                 // Example: drive left or execute left-specific commands.
             } else if (x > 300) {
                 telemetry.addData("Object Position", "Middle");
+                currentState = State.TRAJ_MIDDLE;
 
 
                 // Perform actions for the object on the right.
                 // Example: drive right or execute right-specific commands.
             } else if (tfod == null){
                 telemetry.addData("Object Position", "Right");
+
+                currentState = State.TRAJ_RIGHT;
                 // Perform actions for the object in the middle.
                 // Example: drive forward or execute middle-specific commands.
             }   // end for() loop
