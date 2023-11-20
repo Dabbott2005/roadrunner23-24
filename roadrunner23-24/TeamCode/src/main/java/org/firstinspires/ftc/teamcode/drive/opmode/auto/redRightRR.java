@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
 import android.util.Size;
 
+import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -69,7 +70,7 @@ public class redRightRR extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence tarj_left = drive.trajectorySequenceBuilder(startPose)
+        TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
                 .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
                 .addTemporalMarker(0, () -> {
                     //set GripRotate to DOWN
@@ -84,7 +85,7 @@ public class redRightRR extends LinearOpMode {
                 })
                 .build();
 
-        TrajectorySequence traj_backdrop_left = drive.trajectorySequenceBuilder(tarj_left.end())
+        TrajectorySequence traj_backdrop_left = drive.trajectorySequenceBuilder(traj_left.end())
                 .addTemporalMarker(1.5,() -> {
                     //set LIFT to UP
                 })
@@ -134,6 +135,68 @@ public class redRightRR extends LinearOpMode {
         // Save more CPU resources when camera is no longer needed.
         visionPortal.close();
         while (opModeIsActive()  && !isStopRequested()) {
+            switch (currentState) {
+                case TRAJ_LEFT:
+                    drive.followTrajectorySequenceAsync(traj_left);
+                    // Check if the drive class isn't busy
+                    // `isBusy() == true` while it's following the trajectory
+                    // Once `isBusy() == false`, the trajectory follower signals that it is finished
+                    // We move on to the next state
+                    // Make sure we use the async follow function
+                    if (!drive.isBusy()) {
+                        currentState = State.TRAJ_BACKDROP_LEFT;
+                        drive.followTrajectorySequenceAsync(traj_backdrop_left);
+                    }
+                    break;
+                //case TRAJ_RIGHT:
+                    // Check if the drive class is busy following the trajectory
+                    // Move on to the next state, TURN_1, once finished
+                    //if (!drive.isBusy()) {
+                        //currentState = State.TRAJ_BACKDROP_RIGHT;
+                        //drive.turnAsync();
+                    //}
+                    //break;
+                //case TURN_1:
+                    // Check if the drive class is busy turning
+                    // If not, move onto the next state, TRAJECTORY_3, once finished
+                    //if (!drive.isBusy()) {
+                        //currentState = State.TRAJECTORY_3;
+                       // drive.followTrajectoryAsync(trajectory3);
+                   // }
+                   // break;
+                //case TRAJECTORY_3:
+                    // Check if the drive class is busy following the trajectory
+                    // If not, move onto the next state, WAIT_1
+                    //if (!drive.isBusy()) {
+                        //currentState = State.WAIT_1;
+
+                        // Start the wait timer once we switch to the next state
+                        // This is so we can track how long we've been in the WAIT_1 state
+                        //waitTimer1.reset();
+                    //}
+                    //break;
+                //case WAIT_1:
+                    // Check if the timer has exceeded the specified wait time
+                    // If so, move on to the TURN_2 state
+                    //if (waitTimer1.seconds() >= waitTime1) {
+                        //currentState = State.TURN_2;
+                        //drive.turnAsync(turnAngle2);
+                    //}
+                    //break;
+                //case TURN_2:
+                    // Check if the drive class is busy turning
+                    // If not, move onto the next state, IDLE
+                    // We are done with the program
+                    //if (!drive.isBusy()) {
+                        //currentState = State.IDLE;
+                    //}
+                    //break;
+                case IDLE:
+                    // Do nothing in IDLE
+                    // currentState does not change once in IDLE
+                    // This concludes the autonomous program
+                    break;
+            }
 
 
         }
@@ -230,6 +293,7 @@ public class redRightRR extends LinearOpMode {
 
             if (x < 300) {
                 telemetry.addData("Object Position", "Left");
+                currentState = State.TRAJ_LEFT;
 
                 // Perform actions for the object on the left.
                 // Example: drive left or execute left-specific commands.
