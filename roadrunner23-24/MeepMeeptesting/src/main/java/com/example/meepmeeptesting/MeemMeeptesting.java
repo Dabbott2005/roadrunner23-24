@@ -16,12 +16,12 @@ public class MeemMeeptesting {
                 .followTrajectorySequence(drive ->
                         drive.trajectorySequenceBuilder(new Pose2d(11, -61, (Math.toRadians(90))))
                                 .waitSeconds(2)
-                                .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
+                                .lineToSplineHeading(new Pose2d(35,-35,(Math.toRadians(180))))
                                 .waitSeconds(2)
-                                .lineTo(new Vector2d(49, -32))
+                                .lineTo(new Vector2d(49, -42))
                                 .waitSeconds(2)
                                 .forward(3)
-                                .strafeLeft(25)
+                                .strafeLeft(19)
                                 .waitSeconds(2)
                                 .build()
                 );
