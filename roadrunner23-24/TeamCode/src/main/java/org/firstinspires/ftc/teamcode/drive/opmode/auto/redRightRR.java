@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -8,6 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
@@ -17,18 +20,21 @@ import java.util.List;
 public class redRightRR extends LinearOpMode {
 
     enum State {
-        TRAJECTORY_1,   // First, follow a splineTo() trajectory
-        TRAJECTORY_2,   // Then, follow a lineTo() trajectory
-        TURN_1,         // Then we want to do a point turn
-        TRAJECTORY_3,   // Then, we follow another lineTo() trajectory
-        WAIT_1,         // Then we're gonna wait a second
-        TURN_2,         // Finally, we're gonna turn again
+        TRAJ_LEFT,   //
+        TRAJ_MIDDLE,   //
+        TRAJ_RIGHT,         //
+        TRAJ_BACKDROP_LEFT,//
+        TRAJ_BACKDROP_MIDDLE,
+        TRAJ_BACKDROP_RIGHT,
+
+        WAIT,
         IDLE            // Our bot will enter the IDLE state when done
     }
 
     State currentState = State.IDLE;
 
     Pose2d startPose = new Pose2d(11, -61, (Math.toRadians(90)));
+
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -60,6 +66,35 @@ public class redRightRR extends LinearOpMode {
         //Lift lift = new Lift(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setPoseEstimate(startPose);
+
+        TrajectorySequence tarj_left = drive.trajectorySequenceBuilder(startPose)
+                .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
+                .addTemporalMarker(0, () -> {
+                    //set GripRotate to DOWN
+                })
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                    //open claw
+                })
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(2,() -> {
+                    //set GripRotate to UP
+                })
+                .build();
+
+        TrajectorySequence traj_backdrop_left = drive.trajectorySequenceBuilder(tarj_left.end())
+                .addTemporalMarker(1,() -> {
+                    //set LIFT to UP
+                })
+
+
+
+
+
+
+
+
+                .build();
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
