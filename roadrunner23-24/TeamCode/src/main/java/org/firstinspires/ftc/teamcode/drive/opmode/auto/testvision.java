@@ -40,7 +40,7 @@ public class testvision extends LinearOpMode {
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-            "Prop",
+            "redProp",
     };
 
     /**
@@ -171,6 +171,7 @@ public class testvision extends LinearOpMode {
 
             if (x < 200) {
                 telemetry.addData("Object Position", "Left");
+
 
                 // Perform actions for the object on the left.
                 // Example: drive left or execute left-specific commands.
