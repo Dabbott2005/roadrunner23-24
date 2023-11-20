@@ -27,7 +27,6 @@ public class redRightRR extends LinearOpMode {
         TRAJ_BACKDROP_MIDDLE,
         TRAJ_BACKDROP_RIGHT,
 
-        WAIT,
         IDLE            // Our bot will enter the IDLE state when done
     }
 
@@ -83,9 +82,11 @@ public class redRightRR extends LinearOpMode {
                 .build();
 
         TrajectorySequence traj_backdrop_left = drive.trajectorySequenceBuilder(tarj_left.end())
-                .addTemporalMarker(1,() -> {
+                .addTemporalMarker(1.5,() -> {
                     //set LIFT to UP
                 })
+                .lineTo(new Vector2d(49, -32))
+
 
 
 
