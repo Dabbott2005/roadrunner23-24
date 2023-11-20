@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
+import android.util.Size;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -13,6 +15,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.opencv.core.Mat;
 
 import java.util.List;
 
@@ -39,7 +42,7 @@ public class redRightRR extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "MyModelStoredAsAsset.tflite";
+    private static final String TFOD_MODEL_ASSET = "redProp.tflite";
     // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
     // this is used when uploading models directly to the RC using the model upload interface.
     private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
@@ -86,14 +89,16 @@ public class redRightRR extends LinearOpMode {
                     //set LIFT to UP
                 })
                 .lineTo(new Vector2d(49, -32))
-
-
-
-
-
-
-
-
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    //set depo to OPEN
+                })
+                .forward(3)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    //set depo to close
+                    //set LIFT to DOWN
+                })
+                .strafeLeft(25)
 
                 .build();
 
@@ -104,11 +109,14 @@ public class redRightRR extends LinearOpMode {
         waitForStart();
 
         if (isStopRequested()) return;
-        {
 
-            while (opModeIsActive() && !isStopRequested()) {
+        if (opModeIsActive()) {
+            while (opModeIsActive()) {
+
 
                 telemetryTfod();
+
+
 
                 // Push telemetry to the Driver Station.
                 telemetry.update();
@@ -120,10 +128,19 @@ public class redRightRR extends LinearOpMode {
             }
         }
 
+
+
+
         // Save more CPU resources when camera is no longer needed.
         visionPortal.close();
+        while (opModeIsActive()  && !isStopRequested()) {
 
-    }   // end runOpMode()
+
+        }
+    }
+
+
+    // end runOpMode()
 
     /**
      * Initialize the TensorFlow Object Detection processor.
@@ -138,8 +155,8 @@ public class redRightRR extends LinearOpMode {
                 // choose one of the following:
                 //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
                 //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                //.setModelAssetName(TFOD_MODEL_ASSET)
-                .setModelFileName(TFOD_MODEL_FILE)
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                //.setModelFileName(TFOD_MODEL_FILE)
 
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
@@ -162,7 +179,7 @@ public class redRightRR extends LinearOpMode {
         }
 
         // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
+        builder.setCameraResolution(new Size(1280, 720));
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
         //builder.enableLiveView(true);
@@ -194,8 +211,10 @@ public class redRightRR extends LinearOpMode {
      */
     private void telemetryTfod() {
 
+
         List<Recognition> currentRecognitions = tfod.getFreshRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
+
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
@@ -203,22 +222,25 @@ public class redRightRR extends LinearOpMode {
             double y = (recognition.getTop() + recognition.getBottom()) / 2;
 
 
+
             telemetry.addData("", " ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
 
-            if (x < 200) {
+            if (x < 300) {
                 telemetry.addData("Object Position", "Left");
 
                 // Perform actions for the object on the left.
                 // Example: drive left or execute left-specific commands.
-            } else if (x > 400) {
-                telemetry.addData("Object Position", "Right");
+            } else if (x > 300) {
+                telemetry.addData("Object Position", "Middle");
+
+
                 // Perform actions for the object on the right.
                 // Example: drive right or execute right-specific commands.
-            } else {
-                telemetry.addData("Object Position", "Middle");
+            } else if (tfod == null){
+                telemetry.addData("Object Position", "Right");
                 // Perform actions for the object in the middle.
                 // Example: drive forward or execute middle-specific commands.
             }   // end for() loop
