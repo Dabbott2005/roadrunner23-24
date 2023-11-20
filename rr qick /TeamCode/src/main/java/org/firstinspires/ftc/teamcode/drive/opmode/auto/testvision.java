@@ -14,7 +14,6 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 import java.util.List;
 
 @TeleOp(name = "Concept: TensorFlow Object Detection", group = "Concept")
-@Disabled
 public class testvision extends LinearOpMode {
 
     enum State {
@@ -101,15 +100,15 @@ public class testvision extends LinearOpMode {
                 //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
                 //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
                 //.setModelAssetName(TFOD_MODEL_ASSET)
-                //.setModelFileName(TFOD_MODEL_FILE)
+                .setModelFileName(TFOD_MODEL_FILE)
 
                 // The following default settings are available to un-comment and edit as needed to
                 // set parameters for custom models.
-                //.setModelLabels(LABELS)
-                //.setIsModelTensorFlow2(true)
+                .setModelLabels(LABELS)
+                .setIsModelTensorFlow2(true)
                 //.setIsModelQuantized(true)
                 //.setModelInputSize(300)
-                //.setModelAspectRatio(16.0 / 9.0)
+                .setModelAspectRatio(16.0 / 9.0)
 
                 .build();
 
