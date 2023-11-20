@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,8 +12,8 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@TeleOp(name = "Concept: TensorFlow Object Detection", group = "Concept")
-public class testvision extends LinearOpMode {
+@TeleOp(name = "redRightRR")
+public class redRightRR extends LinearOpMode {
 
     enum State {
         TRAJECTORY_1,   // First, follow a splineTo() trajectory
@@ -171,7 +170,6 @@ public class testvision extends LinearOpMode {
 
             if (x < 200) {
                 telemetry.addData("Object Position", "Left");
-//test input for github
 
                 // Perform actions for the object on the left.
                 // Example: drive left or execute left-specific commands.
