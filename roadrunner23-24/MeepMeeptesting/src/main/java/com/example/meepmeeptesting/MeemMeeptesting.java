@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -17,8 +18,7 @@ public class MeemMeeptesting {
                                 .waitSeconds(2)
                                 .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
                                 .waitSeconds(2)
-                                .back(38)
-                                .strafeRight(3)
+                                .lineTo(new Vector2d(49, -32))
                                 .waitSeconds(2)
                                 .forward(3)
                                 .strafeLeft(25)
