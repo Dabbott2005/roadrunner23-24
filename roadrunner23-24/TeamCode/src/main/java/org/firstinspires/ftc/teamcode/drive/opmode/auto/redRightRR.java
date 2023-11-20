@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
@@ -27,7 +28,7 @@ public class redRightRR extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(15, 10, Math.toRadians(180));
+    Pose2d startPose = new Pose2d(11, -61, (Math.toRadians(90)));
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -56,6 +57,9 @@ public class redRightRR extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         initTfod();
+        //Lift lift = new Lift(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setPoseEstimate(startPose);
 
         // Wait for the DS start button to be touched.
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
