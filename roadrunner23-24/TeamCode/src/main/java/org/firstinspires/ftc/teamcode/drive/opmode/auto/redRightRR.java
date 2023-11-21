@@ -213,6 +213,7 @@ public class redRightRR extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+
         if (opModeIsActive()) {
             while (opModeIsActive()) {
 
@@ -491,14 +492,16 @@ public class redRightRR extends LinearOpMode {
 
 
         List<Recognition> currentRecognitions = tfod.getFreshRecognitions();
+
         telemetry.addData("# Objects Detected", currentRecognitions.size());
+        if (currentRecognitions.size() > 0) {
+
 
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
             double x = (recognition.getLeft() + recognition.getRight()) / 2;
             double y = (recognition.getTop() + recognition.getBottom()) / 2;
-
 
 
             telemetry.addData("", " ");
@@ -519,15 +522,20 @@ public class redRightRR extends LinearOpMode {
 
                 // Perform actions for the object on the right.
                 // Example: drive right or execute right-specific commands.
-            } else if (tfod == null){
+            } else if (currentRecognitions == null) {
                 telemetry.addData("Object Position", "Right");
 
                 currentState = State.TRAJ_RIGHT;
                 // Perform actions for the object in the middle.
                 // Example: drive forward or execute middle-specific commands.
             }   // end for() loop
+        }
 
-        }   // end method telemetryTfod()
+        }else{
+            telemetry.addData("No objects detected",null);
+            currentState = State.TRAJ_RIGHT;
+
+        }
 
     }
 }
