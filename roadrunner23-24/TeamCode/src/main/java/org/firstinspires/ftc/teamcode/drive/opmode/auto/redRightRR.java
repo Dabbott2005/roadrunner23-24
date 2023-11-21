@@ -489,13 +489,13 @@ public class redRightRR extends LinearOpMode {
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
 
-            if (x < 300) {
+            if (x < 400) {
                 telemetry.addData("Object Position", "Left");
                 currentState = State.TRAJ_LEFT;
 
                 // Perform actions for the object on the left.
                 // Example: drive left or execute left-specific commands.
-            } else if (x > 300) {
+            } else if (x > 400) {
                 telemetry.addData("Object Position", "Middle");
                 currentState = State.TRAJ_MIDDLE;
 
