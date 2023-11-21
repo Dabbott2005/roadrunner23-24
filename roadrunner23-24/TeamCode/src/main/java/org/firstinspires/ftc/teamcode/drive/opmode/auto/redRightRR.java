@@ -106,7 +106,7 @@ public class redRightRR extends LinearOpMode {
                     //set LIFT to UP
                 })
                 .lineTo(new Vector2d(49, -32))
-                .waitSeconds(1)
+                .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.deposit.setPosition(OPEN_DEPO);
                     //set depo to OPEN
@@ -312,8 +312,8 @@ public class redRightRR extends LinearOpMode {
 
 
         }
-    }
-    static class Lift {
+    }// end runOpMode()
+    class Lift {
         DcMotorEx leftSlide = null;
         DcMotorEx rightSlide = null;
         DcMotorEx gripRotate = null;
@@ -419,7 +419,7 @@ public class redRightRR extends LinearOpMode {
     }
 
 
-    // end runOpMode()
+
 
     /**
      * Initialize the TensorFlow Object Detection processor.
