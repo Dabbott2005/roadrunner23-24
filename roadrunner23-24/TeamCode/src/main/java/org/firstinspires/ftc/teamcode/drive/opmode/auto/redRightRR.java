@@ -506,7 +506,7 @@ public class redRightRR extends LinearOpMode {
                 telemetry.addData("Object Position", "Right");
 
                 currentState = State.TRAJ_RIGHT;
-                // Perform actios for the object in the middle.
+                // Perform actions for the object in the middle.
                 // Example: drive forward or execute middle-specific commands.
             }   // end for() loop
 
