@@ -188,7 +188,7 @@ public class blueLeftRR extends LinearOpMode {
                 .back(65)
                 .build();
 
-        TrajectorySequence traj_backdrop_right = drive.trajectorySequenceBuilder(traj_left.end())
+        TrajectorySequence traj_backdrop_right = drive.trajectorySequenceBuilder(traj_right.end())
                 .addTemporalMarker(1.5,() -> {
                     lift.setTargetPosition(Lift.SLIDE_UP);
                     //set LIFT to UP
