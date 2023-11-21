@@ -24,16 +24,16 @@ import java.util.List;
 
 @Autonomous(name = "redRightRR")
 public class redRightRR extends LinearOpMode {
-    private static final double CLOSED_CLAW = 1;  // Example target position for linear slides
-    private static final int OPEN_CLAW = 0;  // Example target position for linear slides
-    private static final int OPEN_DEPO = 1;  // Example target position for linear slides
-    private static final double CLOSED_DEPO = 0.5;  // Example target position for linear slides
+    private static final double CLOSED_CLAW = 1;
+    private static final int OPEN_CLAW = 0;
+    private static final int OPEN_DEPO = 1;
+    private static final double CLOSED_DEPO = 0.5;
 
     //ext motors
 
 
     enum State {
-        TRAJ_LEFT,   //
+        TRAJ_LEFT,   //moving forward while turning to left spike mark
         TRAJ_MIDDLE,   //
         TRAJ_RIGHT,         //
         TRAJ_BACKDROP_LEFT,//
@@ -76,7 +76,6 @@ public class redRightRR extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         initTfod();
-        //Lift lift = new Lift(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Lift lift = new Lift(hardwareMap);
         drive.setPoseEstimate(startPose);
@@ -126,28 +125,37 @@ public class redRightRR extends LinearOpMode {
         TrajectorySequence traj_middle = drive.trajectorySequenceBuilder(startPose)
                 .lineToSplineHeading(new Pose2d(23,-24,(Math.toRadians(180))))
                 .addTemporalMarker(0, () -> {
+                    lift.claw.setPosition(CLOSED_CLAW);
+                    lift.setTargetPosition(Lift.ROTATE_DOWN);
                     //set GripRotate to DOWN
                 })
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                    lift.claw.setPosition(OPEN_CLAW);
                     //open claw
                 })
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(2,() -> {
+                    lift.claw.setPosition(CLOSED_CLAW);
+                    lift.setTargetPosition(Lift.ROTATE_UP);
                     //set GripRotate to UP
                 })
                 .build();
         TrajectorySequence traj_backdrop_middle = drive.trajectorySequenceBuilder(traj_middle.end())
                 .addTemporalMarker(1.5,() -> {
+                    lift.setTargetPosition(Lift.SLIDE_UP);
                     //set LIFT to UP
                 })
                 .lineTo(new Vector2d(49, -36))
                 .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.deposit.setPosition(OPEN_DEPO);
                     //set depo to OPEN
                 })
                 .forward(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.deposit.setPosition(CLOSED_DEPO);
+                    lift.setTargetPosition(Lift.SLIDE_DOWN);
                     //set depo to close
                     //set LIFT to DOWN
                 })
@@ -158,29 +166,38 @@ public class redRightRR extends LinearOpMode {
         TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
                 .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
                 .addTemporalMarker(0, () -> {
+                    lift.claw.setPosition(CLOSED_CLAW);
+                    lift.setTargetPosition(Lift.ROTATE_DOWN);
                     //set GripRotate to DOWN
                 })
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                    lift.claw.setPosition(OPEN_CLAW);
                     //open claw
                 })
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(2,() -> {
+                    lift.claw.setPosition(CLOSED_CLAW);
+                    lift.setTargetPosition(Lift.ROTATE_UP);
                     //set GripRotate to UP
                 })
                 .build();
 
         TrajectorySequence traj_backdrop_right = drive.trajectorySequenceBuilder(traj_left.end())
                 .addTemporalMarker(1.5,() -> {
+                    lift.setTargetPosition(Lift.SLIDE_UP);
                     //set LIFT to UP
                 })
                 .lineTo(new Vector2d(49, -42))
                 .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.deposit.setPosition(OPEN_DEPO);
                     //set depo to OPEN
                 })
                 .forward(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.deposit.setPosition(CLOSED_DEPO);
+                    lift.setTargetPosition(Lift.SLIDE_DOWN);
                     //set depo to close
                     //set LIFT to DOWN
                 })
@@ -295,7 +312,7 @@ public class redRightRR extends LinearOpMode {
 
         }
     }
-    class Lift {
+    static class Lift {
         DcMotorEx leftSlide = null;
         DcMotorEx rightSlide = null;
         DcMotorEx gripRotate = null;
