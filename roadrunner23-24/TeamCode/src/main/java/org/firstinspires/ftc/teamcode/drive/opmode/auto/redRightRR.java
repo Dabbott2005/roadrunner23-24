@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
 import android.util.Size;
 
-import com.acmerobotics.roadrunner.drive.Drive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -16,12 +19,18 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
-import org.opencv.core.Mat;
 
 import java.util.List;
 
-@TeleOp(name = "redRightRR")
+@Autonomous(name = "redRightRR")
 public class redRightRR extends LinearOpMode {
+    private static final double CLOSED_CLAW = 1;  // Example target position for linear slides
+    private static final int OPEN_CLAW = 0;  // Example target position for linear slides
+    private static final int OPEN_DEPO = 1;  // Example target position for linear slides
+    private static final double CLOSED_DEPO = 0.5;  // Example target position for linear slides
+
+    //ext motors
+
 
     enum State {
         TRAJ_LEFT,   //
@@ -33,6 +42,7 @@ public class redRightRR extends LinearOpMode {
 
         IDLE            // Our bot will enter the IDLE state when done
     }
+
 
     State currentState = State.IDLE;
 
@@ -68,34 +78,44 @@ public class redRightRR extends LinearOpMode {
         initTfod();
         //Lift lift = new Lift(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        Lift lift = new Lift(hardwareMap);
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
                 .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
                 .addTemporalMarker(0, () -> {
+                    lift.claw.setPosition(CLOSED_CLAW);
+                    lift.setTargetPosition(Lift.ROTATE_DOWN);
                     //set GripRotate to DOWN
                 })
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                    lift.claw.setPosition(OPEN_CLAW);
                     //open claw
                 })
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(2,() -> {
+                    lift.claw.setPosition(CLOSED_CLAW);
+                    lift.setTargetPosition(Lift.ROTATE_UP);
                     //set GripRotate to UP
                 })
                 .build();
 
         TrajectorySequence traj_backdrop_left = drive.trajectorySequenceBuilder(traj_left.end())
                 .addTemporalMarker(1.5,() -> {
+                    lift.setTargetPosition(Lift.SLIDE_UP);
                     //set LIFT to UP
                 })
                 .lineTo(new Vector2d(49, -32))
                 .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.deposit.setPosition(OPEN_DEPO);
                     //set depo to OPEN
                 })
                 .forward(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.deposit.setPosition(CLOSED_DEPO);
+                    lift.setTargetPosition(Lift.SLIDE_DOWN);
                     //set depo to close
                     //set LIFT to DOWN
                 })
@@ -257,8 +277,126 @@ public class redRightRR extends LinearOpMode {
                     // This concludes the autonomous program
                     break;
             }
+            drive.update();
+
+            lift.update();
+
+            // Read pose
+            Pose2d poseEstimate = drive.getPoseEstimate();
+
+            // Continually write pose to `PoseStorage`
+
+            // Print pose to telemetry
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();
 
 
+        }
+    }
+    class Lift {
+        DcMotorEx leftSlide = null;
+        DcMotorEx rightSlide = null;
+        DcMotorEx gripRotate = null;
+
+        //servos
+        Servo claw = null;
+        Servo deposit = null;
+
+        private static final double KP = 0.01; // Placeholder value, adjust as needed
+        private static final double KI = 0.001; // Placeholder value, adjust as needed
+        private static final double KD = 0.001; // Placeholder value, adjust as needed
+
+        private double targetPosition;
+        private double currentPosition;
+        private double previousError;
+        private double integral;
+
+        private static final int SLIDE_UP = 1100;  // Example target position for linear slides
+        private static final int SLIDE_DOWN = 0;  // Example target position for linear slides
+        private static final int ROTATE_UP = 0;  // Example target position for grip rotation
+
+        private static final int ROTATE_DOWN = 400;  // Example target position for linear slides
+
+
+
+        public Lift(HardwareMap hardwareMap) {
+            leftSlide = hardwareMap.get(DcMotorEx.class, "leftSlide");
+            rightSlide = hardwareMap.get(DcMotorEx.class, "rightSlide");
+            gripRotate = hardwareMap.get(DcMotorEx.class, "gripRotate");
+
+            claw = hardwareMap.get(Servo.class, "claw");
+            deposit = hardwareMap.get(Servo.class, "deposit");
+
+            leftSlide.setDirection(DcMotor.Direction.FORWARD);
+            rightSlide.setDirection(DcMotor.Direction.FORWARD);
+            gripRotate.setDirection(DcMotor.Direction.FORWARD);
+
+            leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            gripRotate.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            gripRotate.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            // Set zero power behavior
+            leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            gripRotate.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            // Beep boop this is the the constructor for the lift
+            // Assume this sets up the lift hardware
+        }
+
+        public void update() {
+            double error = targetPosition - currentPosition;
+
+            // Calculate integral of the error
+            integral += error;
+
+            // Calculate derivative of the error
+            double derivative = error - previousError;
+
+            // Calculate output using PID formula
+            double output = KP * error + KI * integral + KD * derivative;
+
+            // Apply the output to the motor
+            rightSlide.setPower(output);
+            leftSlide.setPower(output);
+            gripRotate.setPower(output);
+
+            // Update previous error for the next iteration
+            previousError = error;
+            // Beep boop this is the lift update function
+            // Assume this runs some PID controller for the lift
+        }
+        public void setTargetPosition(double target) {
+            targetPosition = target;
+        }
+        public void lowerLift() {
+            // Implement logic to lower the lift to a predefined position
+            leftSlide.setTargetPosition(SLIDE_DOWN);
+            rightSlide.setTargetPosition(SLIDE_DOWN);
+        }
+
+        public void raiseLift() {
+            // Implement logic to raise the lift to a predefined position
+            leftSlide.setTargetPosition(SLIDE_UP);
+            rightSlide.setTargetPosition(SLIDE_UP);
+        }
+
+        public void raiseClaw() {
+            gripRotate.setTargetPosition(ROTATE_UP);
+            // Implement logic to open the claw (if applicable)
+            // This might involve controlling a servo or another motor
+        }
+
+        public void lowerClaw() {
+            gripRotate.setTargetPosition(ROTATE_DOWN);
+            // Implement logic to close the claw (if applicable)
+            // This might involve controlling a servo or another motor
         }
     }
 
