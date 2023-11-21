@@ -4,6 +4,7 @@ import android.util.Size;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,7 +22,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-@TeleOp(name = "redRightRR")
+@Autonomous(name = "redRightRR")
 public class redRightRR extends LinearOpMode {
     private static final double CLOSED_CLAW = 1;  // Example target position for linear slides
     private static final int OPEN_CLAW = 0;  // Example target position for linear slides
