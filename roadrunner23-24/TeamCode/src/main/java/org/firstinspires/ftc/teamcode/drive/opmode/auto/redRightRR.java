@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
 import android.util.Size;
 
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -25,8 +26,8 @@ import java.util.List;
 @Autonomous(name = "redRightRR")
 public class redRightRR extends LinearOpMode {
     private static final double CLOSED_CLAW = 1;
-    private static final int OPEN_CLAW = 0;
-    private static final int OPEN_DEPO = 1;
+    private static final double OPEN_CLAW = 0;
+    private static final double OPEN_DEPO = 1;
     private static final double CLOSED_DEPO = 0.5;
 
     //ext motors
@@ -313,18 +314,18 @@ public class redRightRR extends LinearOpMode {
 
         }
     }// end runOpMode()
-    class Lift {
-        DcMotorEx leftSlide = null;
-        DcMotorEx rightSlide = null;
-        DcMotorEx gripRotate = null;
+    public class Lift {
+        private DcMotorEx leftSlide;
+        private DcMotorEx rightSlide;
+        private DcMotorEx gripRotate;
 
         //servos
-        Servo claw = null;
-        Servo deposit = null;
+        public Servo claw = null;
+        public Servo deposit = null;
 
-        private static final double KP = 0.01; // Placeholder value, adjust as needed
-        private static final double KI = 0.001; // Placeholder value, adjust as needed
-        private static final double KD = 0.001; // Placeholder value, adjust as needed
+        private static final double KP = 0.004; // Placeholder value, adjust as needed
+        private static final double KI = 0.0; // Placeholder value, adjust as needed
+        private static final double KD = 0.0001; // Placeholder value, adjust as needed
 
         private double targetPosition;
         private double currentPosition;
