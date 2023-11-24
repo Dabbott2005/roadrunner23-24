@@ -83,6 +83,7 @@ public class redRightRR extends LinearOpMode {
 
         TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
                 .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
+                .back(2)
                 .addTemporalMarker(0, () -> {
                     lift.claw.setPosition(CLOSED_CLAW);
                     lift.setTargetPosition(Lift.ROTATE_DOWN);
@@ -165,7 +166,7 @@ public class redRightRR extends LinearOpMode {
                 .build();
 
         TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
-                .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
+                .lineToSplineHeading(new Pose2d(35,-35,(Math.toRadians(180))))
                 .addTemporalMarker(0, () -> {
                     lift.claw.setPosition(CLOSED_CLAW);
                     lift.setTargetPosition(Lift.ROTATE_DOWN);

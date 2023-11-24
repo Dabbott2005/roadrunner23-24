@@ -45,7 +45,7 @@ public class redLeftRR extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(-35, -61, (Math.toRadians(90)));
+    Pose2d startPose = new Pose2d(-36, -61, (Math.toRadians(90)));
 
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
@@ -80,7 +80,8 @@ public class redLeftRR extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
-                .lineToSplineHeading(new Pose2d(-35,-35,(Math.toRadians(180))))
+                .lineToSplineHeading(new Pose2d(-36,-35,(Math.toRadians(180))))
+                .back(2)
                 .addTemporalMarker(0, () -> {
                     lift.claw.setPosition(CLOSED_CLAW);
                     lift.setTargetPosition(Lift.ROTATE_DOWN);
@@ -97,6 +98,7 @@ public class redLeftRR extends LinearOpMode {
                     lift.setTargetPosition(Lift.ROTATE_UP);
                     //set GripRotate to UP
                 })
+                .forward(2)
                 .strafeRight(25)
                 .back(65)
                 .build();
@@ -169,6 +171,7 @@ public class redLeftRR extends LinearOpMode {
 
         TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
                 .lineToSplineHeading(new Pose2d(-35,-35,(Math.toRadians(0))))
+                .back(1)
                 .addTemporalMarker(0, () -> {
                     lift.claw.setPosition(CLOSED_CLAW);
                     lift.setTargetPosition(Lift.ROTATE_DOWN);
