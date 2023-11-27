@@ -41,7 +41,7 @@ public class redRightRR extends LinearOpMode {
         TRAJ_BACKDROP_MIDDLE,
         TRAJ_BACKDROP_RIGHT,
 
-        IDLE            // Our bot will enter the IDLE state when done
+        IDLE,            // Our bot will enter the IDLE state when done
     }
 
 
@@ -281,13 +281,16 @@ public class redRightRR extends LinearOpMode {
                     }
                     break;
                 case TRAJ_BACKDROP_MIDDLE:
+
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
+
                     }
                     break;
                 case TRAJ_BACKDROP_RIGHT:
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
+
                     }
 
                     break;
@@ -521,17 +524,9 @@ public class redRightRR extends LinearOpMode {
                 telemetry.addData("Object Position", "Middle");
                 currentState = State.TRAJ_MIDDLE;
 
+            }
 
-                // Perform actions for the object on the right.
-                // Example: drive right or execute right-specific commands.
-            } //else if (currentRecognitions == null) {
-                //telemetry.addData("Object Position", "Right");
-
-                //currentState = State.TRAJ_RIGHT;
-                // Perform actions for the object in the middle.
-                // Example: drive forward or execute middle-specific commands.
-            //}   // end for() loop
-        }
+        }// end for() loop
 
         }else{
             telemetry.addData("No objects detected","defaulting to Right");
