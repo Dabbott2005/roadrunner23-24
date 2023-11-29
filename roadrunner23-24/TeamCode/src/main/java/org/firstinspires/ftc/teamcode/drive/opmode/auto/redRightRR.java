@@ -345,12 +345,12 @@ public class redRightRR extends LinearOpMode {
 
 
         public Lift(HardwareMap hardwareMap) {
-            leftSlide = hardwareMap.get(DcMotorEx.class, "leftSlide");
-            rightSlide = hardwareMap.get(DcMotorEx.class, "rightSlide");
-            gripRotate = hardwareMap.get(DcMotorEx.class, "gripRotate");
+            leftSlide = hardwareMap.get(DcMotorEx.class, "leftslide");
+            rightSlide = hardwareMap.get(DcMotorEx.class, "rightslide");
+            gripRotate = hardwareMap.get(DcMotorEx.class, "griprotation");
 
-            claw = hardwareMap.get(Servo.class, "claw");
-            deposit = hardwareMap.get(Servo.class, "deposit");
+            claw = hardwareMap.get(Servo.class, "clawservo");
+            deposit = hardwareMap.get(Servo.class, "depositservo");
 
             leftSlide.setDirection(DcMotor.Direction.FORWARD);
             rightSlide.setDirection(DcMotor.Direction.FORWARD);
