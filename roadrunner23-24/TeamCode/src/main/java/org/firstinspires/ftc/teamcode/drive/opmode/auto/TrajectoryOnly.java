@@ -56,7 +56,8 @@ public class TrajectoryOnly extends LinearOpMode {
         LEFT_WAIT_1,
         LEFT_WAIT_2,
         LEFT_TRAJECTORY_BACKDROP_1,
-        TURN_2,
+        LEFT_WAIT_3,
+        LEFT_TRAJECTORY_BACKDROP_2,
         IDLE
     }
 
@@ -113,6 +114,10 @@ public class TrajectoryOnly extends LinearOpMode {
 
         Trajectory leftTrajectoryBackdrop1 = drive.trajectoryBuilder(leftTrajectory2.end())
                 .lineTo(new Vector2d(49, -32))
+                .build();
+
+        Trajectory leftTrajectoryBackdrop2 = drive.trajectoryBuilder(leftTrajectoryBackdrop1.end())
+                .forward(3)
                 .build();
 
         // Define the angle to turn at
@@ -198,16 +203,26 @@ public class TrajectoryOnly extends LinearOpMode {
                     // If so, move on to the TURN_2 state
                     if (waitTimer1.seconds() >= waitTime1) {
 
-                        currentState = State.TURN_2;
-                        drive.turnAsync(turnAngle2);
+                        currentState = State.LEFT_WAIT_3;
                     }
                     break;
-                case TURN_2:
+                case LEFT_WAIT_3:
                     // Check if the drive class is busy turning
                     // If not, move onto the next state, IDLE
                     // We are done with the program
-                    if (!drive.isBusy()) {
-                        currentState = State.IDLE;
+                    if (waitTimer1.seconds() >= waitTime1) {
+                        lift.deposit.setPosition(OPEN_DEPO);
+                        currentState = State.LEFT_TRAJECTORY_BACKDROP_2;
+                        drive.followTrajectoryAsync(leftTrajectoryBackdrop2);
+                        waitTimer1.reset();
+                    }
+                    break;
+                case LEFT_TRAJECTORY_BACKDROP_2:
+                    // Check if the timer has exceeded the specified wait time
+                    // If so, move on to the TURN_2 state
+                    if (waitTimer1.seconds() >= waitTime1) {
+
+                        currentState = State.LEFT_WAIT_3;
                     }
                     break;
                 case IDLE:
