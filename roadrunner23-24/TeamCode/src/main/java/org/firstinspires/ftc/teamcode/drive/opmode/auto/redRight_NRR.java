@@ -408,7 +408,7 @@ public class redRight_NRR extends LinearOpMode {
 
 
 
-                if(x < 200) {
+                if(x < 400) {
                     //LEFT
                     clawServo.setPosition(1);
                     gripRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
