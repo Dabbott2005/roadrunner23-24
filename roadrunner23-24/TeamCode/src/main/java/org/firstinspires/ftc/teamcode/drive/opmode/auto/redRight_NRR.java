@@ -161,7 +161,7 @@ public class redRight_NRR extends LinearOpMode {
             }
 
             // Choose a camera resolution. Not all cameras support all resolutions.
-            builder.setCameraResolution(new Size(640, 480));
+            builder.setCameraResolution(new Size(1280, 720));
 
             // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
             //builder.enableLiveView(true);
@@ -631,7 +631,7 @@ public class redRight_NRR extends LinearOpMode {
 
 
 
-            }else if (x > 400){
+            }else if (x > 800){
                 //RIGHT
                     clawServo.setPosition(1);
                     gripRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -844,7 +844,7 @@ public class redRight_NRR extends LinearOpMode {
 
 
 
-                } else if (x>=200 && x<=400) {
+                } else if (x>=400 && x<=800) {
                     clawServo.setPosition(1);
                     gripRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     gripRotation.setTargetPosition(-1000);
