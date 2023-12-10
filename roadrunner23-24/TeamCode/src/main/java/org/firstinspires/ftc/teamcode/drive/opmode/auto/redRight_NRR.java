@@ -198,7 +198,7 @@ public class redRight_NRR extends LinearOpMode {
             telemetry.addData("# Objects Detected", currentRecognitions.size());
 
             // Step through the list of recognitions and display info for each one.
-            if (currentRecognitions.isEmpty()) {
+            if (currentRecognitions.size()<1) {
                 clawServo.setPosition(1);
                 gripRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 gripRotation.setTargetPosition(-1000);
