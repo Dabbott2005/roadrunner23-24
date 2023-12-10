@@ -175,10 +175,14 @@ public class Teleop extends LinearOpMode {
                 depositServo.setPosition(1);
                 clawServo.setPosition(1);
                 holdServo.setPosition(1);
-                sleep(1000);
-                depositServo.setPosition(.5);
-                sleep(300);
-                holdServo.setPosition(.1);
+                runtime.reset();
+                if (runtime.time()>=1) {
+                    depositServo.setPosition(.5);
+                }
+                runtime.reset();
+                if(runtime.time()>=0.3) {
+                    holdServo.setPosition(.1);
+                }
             }
             if(gamepad2.x) {
                 depositServo.setPosition(1);
