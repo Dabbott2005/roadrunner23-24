@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
+import static com.sun.tools.doclint.Entity.or;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -72,6 +75,8 @@ public class Teleop_NEW extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        liftLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
@@ -137,27 +142,33 @@ public class Teleop_NEW extends LinearOpMode {
 
 
             // Designate buttons
-            if(gamepad1.a) {
+            while(gamepad1.a) {
                 planeServo.setPosition(-1);
             }
-            if(gamepad1.b) {
+            while(gamepad1.b) {
                 planeServo.setPosition(.3);
             }
 
-            while (gamepad2.a) {
-                Intake.setPower(1);
+            if (gamepad2.a == true) {
+                Intake.setPower(-1);
 
             }
-            while (gamepad2.b) {
-                Intake.setPower(-1);
+            if (gamepad2.b == true) {
+                Intake.setPower(1);
             }
+            if ((!gamepad2.b) && (!gamepad2.a)) {
+                Intake.setPower(0);
+
+            }
+
+
 
             if(gamepad2.y) {
                 leftServo.setPosition(1);
-                rightServo.setPosition(1);
-                sleep(300);
-                leftServo.setPosition(0);
                 rightServo.setPosition(0);
+                sleep(1000);
+                leftServo.setPosition(.5);
+                rightServo.setPosition(.5);
             }
             Slide.setPower(gamepad2.left_stick_y);
             liftLeft.setPower(gamepad2.right_stick_y);
