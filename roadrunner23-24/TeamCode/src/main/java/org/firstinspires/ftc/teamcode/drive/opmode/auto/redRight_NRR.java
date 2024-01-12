@@ -39,13 +39,13 @@ public class redRight_NRR extends LinearOpMode {
 
         // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
         // this is only used for Android Studio when using models in Assets.
-        private static final String TFOD_MODEL_ASSET = "23RedGP.tflite";
+        private static final String TFOD_MODEL_ASSET = "redProp.tflite";
         // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
         // this is used when uploading models directly to the RC using the model upload interface.
-        private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/23RedGP.tflite";
+        private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/redProp.tflite";
         // Define the labels recognized in the model for TFOD (must be in training order!)
         private static final String[] LABELS = {
-                "Red GP",
+                "redProp",
         };
 
         /**
@@ -181,7 +181,7 @@ public class redRight_NRR extends LinearOpMode {
             visionPortal = builder.build();
 
             // Set confidence threshold for TFOD recognitions, at any time.
-            tfod.setMinResultConfidence(0.73f);
+            tfod.setMinResultConfidence(0.50f);
 
 
             // Disable or re-enable the TFOD processor at any time.
@@ -199,6 +199,7 @@ public class redRight_NRR extends LinearOpMode {
 
             // Step through the list of recognitions and display info for each one.
             if (currentRecognitions.size()<1) {
+                //RIGHT
                 clawServo.setPosition(1);
                 gripRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 gripRotation.setTargetPosition(-1000);
@@ -208,10 +209,10 @@ public class redRight_NRR extends LinearOpMode {
                 }
                 gripRotation.setPower(0);
 
-                backLeft.setTargetPosition(1000);
-                backRight.setTargetPosition(1000);
-                frontLeft.setTargetPosition(1000);
-                frontRight.setTargetPosition(1000);
+                backLeft.setTargetPosition(1200);
+                backRight.setTargetPosition(1200);
+                frontLeft.setTargetPosition(1200);
+                frontRight.setTargetPosition(1200);
 
                 backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -236,21 +237,6 @@ public class redRight_NRR extends LinearOpMode {
                 frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                sleep(1000);
-
-                clawServo.setPosition(0);
-
-
-                sleep(1000);
-
-                gripRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                gripRotation.setTargetPosition(1000);
-                gripRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                while (!(gripRotation.getCurrentPosition() == gripRotation.getTargetPosition())) {
-                    gripRotation.setPower(-.3);
-                }
-                gripRotation.setPower(0);
 
 
                 backLeft.setTargetPosition(-700);
@@ -281,10 +267,10 @@ public class redRight_NRR extends LinearOpMode {
                 backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                backLeft.setTargetPosition(-1000);
-                backRight.setTargetPosition(1000);
-                frontLeft.setTargetPosition(-1000);
-                frontRight.setTargetPosition(1000);
+                backLeft.setTargetPosition(-900);
+                backRight.setTargetPosition(900);
+                frontLeft.setTargetPosition(-900);
+                frontRight.setTargetPosition(900);
 
                 backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -309,15 +295,6 @@ public class redRight_NRR extends LinearOpMode {
                 backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                backLeft.setTargetPosition(-1100);
-                backRight.setTargetPosition(-1100);
-                frontLeft.setTargetPosition(-1100);
-                frontRight.setTargetPosition(-1100);
-
-                backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
                 backLeft.setTargetPosition(-300);
                 backRight.setTargetPosition(300);
@@ -337,6 +314,44 @@ public class redRight_NRR extends LinearOpMode {
                     frontLeft.setPower(.7);
                     frontRight.setPower(-.7);
                 }
+
+                backLeft.setTargetPosition(-500);
+                backRight.setTargetPosition(-500);
+                frontLeft.setTargetPosition(-500);
+                frontRight.setTargetPosition(-500);
+
+                backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+                while (!(frontRight.getCurrentPosition() == frontRight.getTargetPosition())) {
+
+                    backLeft.setPower(-.7);
+                    backRight.setPower(-.7);
+                    frontLeft.setPower(-.7);
+                    frontRight.setPower(-.7);
+                }
+
+                sleep(1000);
+
+                clawServo.setPosition(0);
+
+
+                sleep(1000);
+
+                gripRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                gripRotation.setTargetPosition(1000);
+                gripRotation.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                while (!(gripRotation.getCurrentPosition() == gripRotation.getTargetPosition())) {
+                    gripRotation.setPower(-.3);
+                }
+                gripRotation.setPower(0);
+
+                gripRotation.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
                 backLeft.setPower(0);
                 backRight.setPower(0);
                 frontLeft.setPower(0);
@@ -505,10 +520,10 @@ public class redRight_NRR extends LinearOpMode {
                     backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                    backLeft.setTargetPosition(800);
-                    backRight.setTargetPosition(800);
-                    frontLeft.setTargetPosition(800);
-                    frontRight.setTargetPosition(800);
+                    backLeft.setTargetPosition(630);
+                    backRight.setTargetPosition(630);
+                    frontLeft.setTargetPosition(630);
+                    frontRight.setTargetPosition(630);
 
                     backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -582,10 +597,10 @@ public class redRight_NRR extends LinearOpMode {
                     backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                    backLeft.setTargetPosition(-2600);
-                    backRight.setTargetPosition(-2600);
-                    frontLeft.setTargetPosition(-2600);
-                    frontRight.setTargetPosition(-2600);
+                    backLeft.setTargetPosition(-2800);
+                    backRight.setTargetPosition(-2800);
+                    frontLeft.setTargetPosition(-2800);
+                    frontRight.setTargetPosition(-2800);
 
                     backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -748,10 +763,10 @@ public class redRight_NRR extends LinearOpMode {
                         frontRight.setPower(-.7);
                     }
 
-                    backLeft.setTargetPosition(300);
-                    backRight.setTargetPosition(-300);
-                    frontLeft.setTargetPosition(-300);
-                    frontRight.setTargetPosition(300);
+                    backLeft.setTargetPosition(-500);
+                    backRight.setTargetPosition(-500);
+                    frontLeft.setTargetPosition(-500);
+                    frontRight.setTargetPosition(-500);
 
                     backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -762,8 +777,8 @@ public class redRight_NRR extends LinearOpMode {
                     while (!(frontRight.getCurrentPosition() == frontRight.getTargetPosition())) {
 
                         backLeft.setPower(-.7);
-                        backRight.setPower(.7);
-                        frontLeft.setPower(.7);
+                        backRight.setPower(-.7);
+                        frontLeft.setPower(-.7);
                         frontRight.setPower(-.7);
                     }
 

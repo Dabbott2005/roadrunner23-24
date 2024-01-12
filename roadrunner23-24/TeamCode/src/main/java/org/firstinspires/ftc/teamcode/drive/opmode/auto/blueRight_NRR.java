@@ -40,13 +40,13 @@ public class blueRight_NRR extends LinearOpMode {
 
         // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
         // this is only used for Android Studio when using models in Assets.
-        private static final String TFOD_MODEL_ASSET = "23RedGP.tflite";
+        private static final String TFOD_MODEL_ASSET = "blueProp.tflite";
         // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
         // this is used when uploading models directly to the RC using the model upload interface.
-        private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/23RedGP.tflite";
+        private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/blueProp.tflite";
         // Define the labels recognized in the model for TFOD (must be in training order!)
         private static final String[] LABELS = {
-                "Red GP",
+                "blueProp",
         };
 
         /**
@@ -162,7 +162,7 @@ public class blueRight_NRR extends LinearOpMode {
             }
 
             // Choose a camera resolution. Not all cameras support all resolutions.
-            builder.setCameraResolution(new Size(640, 480));
+            builder.setCameraResolution(new Size(1280, 720));
 
             // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
             //builder.enableLiveView(true);
@@ -182,7 +182,7 @@ public class blueRight_NRR extends LinearOpMode {
             visionPortal = builder.build();
 
             // Set confidence threshold for TFOD recognitions, at any time.
-            tfod.setMinResultConfidence(0.73f);
+            tfod.setMinResultConfidence(0.50f);
 
 
             // Disable or re-enable the TFOD processor at any time.
@@ -394,6 +394,40 @@ public class blueRight_NRR extends LinearOpMode {
                 sleep(1000);
                 depositServo.setPosition(.5);
                 sleep(1000);
+
+                frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+                backLeft.setTargetPosition(700);
+                backRight.setTargetPosition(-700);
+                frontLeft.setTargetPosition(-700);
+                frontRight.setTargetPosition(700);
+
+                backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+                while (!(frontRight.getCurrentPosition() == frontRight.getTargetPosition())) {
+
+                    backLeft.setPower(.7);
+                    backRight.setPower(-.7);
+                    frontLeft.setPower(-.7);
+                    frontRight.setPower(.7);
+                }
+                backLeft.setPower(0);
+                backRight.setPower(0);
+                frontLeft.setPower(0);
+                frontRight.setPower(0);
+
+                frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
             }
@@ -630,6 +664,40 @@ public class blueRight_NRR extends LinearOpMode {
                     depositServo.setPosition(.5);
                     sleep(1000);
 
+                    frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+                    backLeft.setTargetPosition(700);
+                    backRight.setTargetPosition(-700);
+                    frontLeft.setTargetPosition(-700);
+                    frontRight.setTargetPosition(700);
+
+                    backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+                    while (!(frontRight.getCurrentPosition() == frontRight.getTargetPosition())) {
+
+                        backLeft.setPower(.7);
+                        backRight.setPower(-.7);
+                        frontLeft.setPower(-.7);
+                        frontRight.setPower(.7);
+                    }
+                    backLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontLeft.setPower(0);
+                    frontRight.setPower(0);
+
+                    frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
 
             }else if (x > 400){
@@ -843,6 +911,40 @@ public class blueRight_NRR extends LinearOpMode {
                     depositServo.setPosition(.5);
                     sleep(1000);
 
+                    frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+                    backLeft.setTargetPosition(700);
+                    backRight.setTargetPosition(-700);
+                    frontLeft.setTargetPosition(-700);
+                    frontRight.setTargetPosition(700);
+
+                    backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+                    while (!(frontRight.getCurrentPosition() == frontRight.getTargetPosition())) {
+
+                        backLeft.setPower(.7);
+                        backRight.setPower(-.7);
+                        frontLeft.setPower(-.7);
+                        frontRight.setPower(.7);
+                    }
+                    backLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontLeft.setPower(0);
+                    frontRight.setPower(0);
+
+                    frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
 
                 } else if (x>=200 && x<=400) {
@@ -1040,6 +1142,40 @@ public class blueRight_NRR extends LinearOpMode {
                     sleep(1000);
                     depositServo.setPosition(.5);
                     sleep(1000);
+
+                    frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+
+                    backLeft.setTargetPosition(700);
+                    backRight.setTargetPosition(-700);
+                    frontLeft.setTargetPosition(-700);
+                    frontRight.setTargetPosition(700);
+
+                    backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+                    while (!(frontRight.getCurrentPosition() == frontRight.getTargetPosition())) {
+
+                        backLeft.setPower(.7);
+                        backRight.setPower(-.7);
+                        frontLeft.setPower(-.7);
+                        frontRight.setPower(.7);
+                    }
+                    backLeft.setPower(0);
+                    backRight.setPower(0);
+                    frontLeft.setPower(0);
+                    frontRight.setPower(0);
+
+                    frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
                 }
 

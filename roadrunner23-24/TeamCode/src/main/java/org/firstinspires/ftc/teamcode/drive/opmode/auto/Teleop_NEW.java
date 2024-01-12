@@ -6,25 +6,30 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="Driver", group="Linear OpMode")
+@TeleOp(name="DriverNew", group="Linear OpMode")
 
-public class Teleop extends LinearOpMode {
+public class Teleop_NEW extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
-    //c
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftFront = null;
-    private DcMotor leftBack = null;
-    private DcMotor rightFront = null;
-    private DcMotor rightBack = null;
-    private DcMotor leftSlide = null;
-    private DcMotor rightSlide = null;
-    private DcMotor gripRotation = null;
+    private DcMotor leftFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor rightBackDrive = null;
+
+    private DcMotor Slide = null;
+
+    private DcMotor Intake = null;
+
+    private DcMotor liftLeft = null;
+
+    private DcMotor liftRight = null;
+
 
     //Servos
-    private Servo depositServo = null;
-    private Servo liftServo = null;
-    private Servo clawServo = null;
+    private Servo leftServo = null;
+    private Servo rightServo = null;
+    private Servo angleServo = null;
     private Servo planeServo = null;
 
     private Servo holdServo = null;
@@ -37,19 +42,20 @@ public class Teleop extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFront  = hardwareMap.get(DcMotor.class, "frontLeft");
-        leftBack  = hardwareMap.get(DcMotor.class, "backLeft");
-        rightFront = hardwareMap.get(DcMotor.class, "frontRight");
-        rightBack = hardwareMap.get(DcMotor.class, "backRight");
-        leftSlide = hardwareMap.get(DcMotor.class, "leftslide");
-        rightSlide = hardwareMap.get(DcMotor.class, "rightslide");
-        gripRotation = hardwareMap.get(DcMotor.class, "griprotation");
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "frontLeft");
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "backLeft");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "frontRight");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "backRight");
+        Intake = hardwareMap.get(DcMotor.class, "Intake");
+        Slide = hardwareMap.get(DcMotor.class, "Slide");
+        liftLeft = hardwareMap.get(DcMotor.class, "liftLeft");
+        liftRight = hardwareMap.get(DcMotor.class, "liftRight");
 
-        depositServo = hardwareMap.get(Servo.class, "depositservo");
-        liftServo = hardwareMap.get(Servo.class, "liftservo");
-        clawServo = hardwareMap.get(Servo.class, "clawservo");
+
+        leftServo = hardwareMap.get(Servo.class, "leftServo");
+        rightServo = hardwareMap.get(Servo.class, "rightServo");
+        angleServo = hardwareMap.get(Servo.class, "angleServo");
         planeServo = hardwareMap.get(Servo.class, "planeservo");
-        holdServo = hardwareMap.get(Servo.class, "holdservo");
 
 
         // ########################################################################################
@@ -62,21 +68,10 @@ public class Teleop extends LinearOpMode {
         // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
-
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
 
 
 
@@ -132,17 +127,12 @@ public class Teleop extends LinearOpMode {
             rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
             rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             */
-            if(gamepad1.left_trigger>0.1) {
-                leftFrontPower  /= 2;
-                rightFrontPower /= 2;
-                leftBackPower   /= 2;
-                rightBackPower  /= 2;
-            }
+
             // Send calculated power to wheels
-            leftFront.setPower(leftFrontPower);
-            rightFront.setPower(rightFrontPower);
-            leftBack.setPower(leftBackPower);
-            rightBack.setPower(rightBackPower);
+            leftFrontDrive.setPower(leftFrontPower);
+            rightFrontDrive.setPower(rightFrontPower);
+            leftBackDrive.setPower(leftBackPower);
+            rightBackDrive.setPower(rightBackPower);
 
 
 
@@ -151,60 +141,33 @@ public class Teleop extends LinearOpMode {
                 planeServo.setPosition(-1);
             }
             if(gamepad1.b) {
-                planeServo.setPosition(.45);
+                planeServo.setPosition(.3);
             }
-            if(gamepad2.dpad_up) {
-                liftServo.setPosition(.5);
-            }
-            if(gamepad2.dpad_right) {
-                liftServo.setPosition(.2);
-            }
-            if(gamepad2.dpad_down) {
-                liftServo.setPosition(0);
-            }
-            if(gamepad2.a) {
-                clawServo.setPosition(1);
+
+            while (gamepad2.a) {
+                Intake.setPower(1);
 
             }
-            if(gamepad2.b) {
-                holdServo.setPosition(.1);
-                liftServo.setPosition(0);
-                clawServo.setPosition(0);
+            while (gamepad2.b) {
+                Intake.setPower(-1);
             }
+
             if(gamepad2.y) {
-                depositServo.setPosition(1);
-                clawServo.setPosition(1);
-                holdServo.setPosition(1);
-                runtime.reset();
-                while (runtime.time()<=1) {
-
-                }
-                depositServo.setPosition(.5);
-                runtime.reset();
-                while(runtime.time()<=0.3) {
-
-                }
-                holdServo.setPosition(.1);
+                leftServo.setPosition(1);
+                rightServo.setPosition(1);
+                sleep(300);
+                leftServo.setPosition(0);
+                rightServo.setPosition(0);
             }
-            if(gamepad2.x) {
-                depositServo.setPosition(1);
-            }
-            leftSlide.setPower(-gamepad2.left_stick_y);
-            rightSlide.setPower(gamepad2.left_stick_y);
-            gripRotation.setPower(gamepad2.right_stick_y);
+            Slide.setPower(gamepad2.left_stick_y);
+            liftLeft.setPower(gamepad2.right_stick_y);
+            liftRight.setPower(gamepad2.right_stick_y);
 
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("FrontLeftEncoder", leftFront.getCurrentPosition());
-            telemetry.addData("BackLeftEncoder", leftBack.getCurrentPosition());
-            telemetry.addData("FrontRightEncode", rightFront.getCurrentPosition());
-            telemetry.addData("BackRightEncode", rightBack.getCurrentPosition());
-
-
-
             telemetry.update();
         }
     }}
