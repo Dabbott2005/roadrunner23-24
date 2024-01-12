@@ -158,7 +158,7 @@ public class Teleop_NEW extends LinearOpMode {
             }
             if ((!gamepad2.b) && (!gamepad2.a)) {
                 Intake.setPower(0);
-
+//
             }
 
             if(gamepad2.y) {
