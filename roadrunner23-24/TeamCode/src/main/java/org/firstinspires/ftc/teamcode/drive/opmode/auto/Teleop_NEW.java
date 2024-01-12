@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
+import static com.sun.tools.doclint.Entity.ang;
 import static com.sun.tools.doclint.Entity.or;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -158,17 +159,36 @@ public class Teleop_NEW extends LinearOpMode {
             }
             if ((!gamepad2.b) && (!gamepad2.a)) {
                 Intake.setPower(0);
-//
             }
 
             if(gamepad2.y) {
                 leftServo.setPosition(1);
                 rightServo.setPosition(0);
             }
-            if(!gamepad2.y) {
+            if((!gamepad2.y) && (!gamepad2.right_bumper) && (!gamepad2.left_bumper)) {
                 leftServo.setPosition(.5);
                 rightServo.setPosition(.5);
             }
+
+            if(gamepad2.right_bumper) {
+                rightServo.setPosition(0);
+            }
+            if(gamepad2.left_bumper) {
+                leftServo.setPosition(1);
+            }
+            if(gamepad2.dpad_up) {
+                angleServo.setPosition(1); // ground level
+            }
+            if(gamepad2.dpad_down) {
+                angleServo.setPosition(0);
+            }
+            if (gamepad2.dpad_right) {
+                angleServo.setPosition(.6);
+            }
+            if(gamepad2.dpad_left) {
+                angleServo.setPosition(.4);
+            }
+
 
             Slide.setPower(gamepad2.left_stick_y);
             liftLeft.setPower(gamepad2.right_stick_y);
