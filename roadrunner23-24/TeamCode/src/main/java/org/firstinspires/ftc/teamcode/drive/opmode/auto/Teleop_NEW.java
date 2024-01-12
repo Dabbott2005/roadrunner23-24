@@ -149,11 +149,11 @@ public class Teleop_NEW extends LinearOpMode {
                 planeServo.setPosition(.3);
             }
 
-            if (gamepad2.a == true) {
+            if (gamepad2.a) {
                 Intake.setPower(-1);
 
             }
-            if (gamepad2.b == true) {
+            if (gamepad2.b) {
                 Intake.setPower(1);
             }
             if ((!gamepad2.b) && (!gamepad2.a)) {
@@ -161,15 +161,15 @@ public class Teleop_NEW extends LinearOpMode {
 
             }
 
-
-
             if(gamepad2.y) {
                 leftServo.setPosition(1);
                 rightServo.setPosition(0);
-                sleep(1000);
+            }
+            if(!gamepad2.y) {
                 leftServo.setPosition(.5);
                 rightServo.setPosition(.5);
             }
+
             Slide.setPower(gamepad2.left_stick_y);
             liftLeft.setPower(gamepad2.right_stick_y);
             liftRight.setPower(gamepad2.right_stick_y);
