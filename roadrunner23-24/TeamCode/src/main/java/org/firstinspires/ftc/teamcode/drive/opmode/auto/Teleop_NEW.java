@@ -107,7 +107,7 @@ public class Teleop_NEW extends LinearOpMode {
             // This ensures that the robot maintains the desired motion.
             max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
             max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
+            max = Math.max(max, Math.abs(rightBackPower));//
 
             if (max > 1.0) {
                 leftFrontPower  /= max;
