@@ -186,7 +186,7 @@ public class Autonomous_NEW extends LinearOpMode {
         visionPortal = builder.build();
 
         // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.50f);
+        tfod.setMinResultConfidence(0.65f);
 
 
         // Disable or re-enable the TFOD processor at any time.
@@ -382,13 +382,47 @@ public class Autonomous_NEW extends LinearOpMode {
 
             sleep(1000);
 
-            angleServo.setPosition(.2);
+            angleServo.setPosition(0);
             sleep(1000);
 
             leftServo.setPosition(1);
             rightServo.setPosition(.5);
 
             sleep(2000);
+
+            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            backLeft.setTargetPosition(200);
+            backRight.setTargetPosition(200);
+            frontLeft.setTargetPosition(200);
+            frontRight.setTargetPosition(200);
+
+            backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+            while (!(frontRight.getCurrentPosition() == frontRight.getTargetPosition())) {
+
+                backLeft.setPower(.7);
+                backRight.setPower(.7);
+                frontLeft.setPower(.7);
+                frontRight.setPower(.7);
+            }
+            backLeft.setPower(0);
+            backRight.setPower(0);
+            frontLeft.setPower(0);
+            frontRight.setPower(0);
+
+
+            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
             frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -510,7 +544,7 @@ public class Autonomous_NEW extends LinearOpMode {
 
             Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            Slide.setTargetPosition(-1450);
+            Slide.setTargetPosition(-1550);
 
 
             Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);

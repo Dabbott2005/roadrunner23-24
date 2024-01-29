@@ -173,18 +173,23 @@ public class Teleop_NEW extends LinearOpMode {
             if(gamepad2.right_bumper) {
                 rightServo.setPosition(0);
             }
+
             if(gamepad2.left_bumper) {
                 leftServo.setPosition(1);
             }
+
             if(gamepad2.dpad_up) {
                 angleServo.setPosition(1); // ground level
             }
+
             if(gamepad2.dpad_down) {
                 angleServo.setPosition(0);
             }
+
             if (gamepad2.dpad_right) {
                 angleServo.setPosition(.6);
             }
+
             if(gamepad2.dpad_left) {
                 angleServo.setPosition(.4);
             }
