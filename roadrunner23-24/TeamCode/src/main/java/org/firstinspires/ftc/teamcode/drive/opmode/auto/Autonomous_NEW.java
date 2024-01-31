@@ -186,7 +186,7 @@ public class Autonomous_NEW extends LinearOpMode {
         visionPortal = builder.build();
 
         // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.50f);
+        tfod.setMinResultConfidence(0.65f);
 
 
         // Disable or re-enable the TFOD processor at any time.
@@ -230,10 +230,6 @@ public class Autonomous_NEW extends LinearOpMode {
             liftLeft.setPower(0);
             liftRight.setPower(0);
 
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             backLeft.setTargetPosition(400);
             backRight.setTargetPosition(400);
@@ -260,13 +256,6 @@ public class Autonomous_NEW extends LinearOpMode {
             frontRight.setPower(0);
 
 
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-
             backLeft.setTargetPosition(-890);
             backRight.setTargetPosition(890);
             frontLeft.setTargetPosition(890);
@@ -291,11 +280,6 @@ public class Autonomous_NEW extends LinearOpMode {
             frontRight.setPower(0);
 
 
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
             backLeft.setTargetPosition(300);
             backRight.setTargetPosition(300);
             frontLeft.setTargetPosition(300);
@@ -318,12 +302,6 @@ public class Autonomous_NEW extends LinearOpMode {
             backRight.setPower(0);
             frontLeft.setPower(0);
             frontRight.setPower(0);
-
-
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
             backLeft.setTargetPosition(-410);
@@ -350,10 +328,6 @@ public class Autonomous_NEW extends LinearOpMode {
             frontLeft.setPower(0);
             frontRight.setPower(0);
 
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             backLeft.setTargetPosition(120);
             backRight.setTargetPosition(120);
@@ -382,7 +356,7 @@ public class Autonomous_NEW extends LinearOpMode {
 
             sleep(1000);
 
-            angleServo.setPosition(.2);
+            angleServo.setPosition(0);
             sleep(1000);
 
             leftServo.setPosition(1);
@@ -391,10 +365,6 @@ public class Autonomous_NEW extends LinearOpMode {
             sleep(2000);
 
 
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             backLeft.setTargetPosition(-200);
             backRight.setTargetPosition(-200);
@@ -419,11 +389,6 @@ public class Autonomous_NEW extends LinearOpMode {
             frontLeft.setPower(0);
             frontRight.setPower(0);
 
-
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             backLeft.setTargetPosition(1100);
             backRight.setTargetPosition(-1100);
@@ -450,12 +415,6 @@ public class Autonomous_NEW extends LinearOpMode {
             frontRight.setPower(0);
 
 
-
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
             backLeft.setTargetPosition(220);
             backRight.setTargetPosition(220);
             frontLeft.setTargetPosition(220);
@@ -478,11 +437,6 @@ public class Autonomous_NEW extends LinearOpMode {
             backRight.setPower(0);
             frontLeft.setPower(0);
             frontRight.setPower(0);
-
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             backLeft.setTargetPosition(-100);
             backRight.setTargetPosition(100);
@@ -544,13 +498,6 @@ public class Autonomous_NEW extends LinearOpMode {
             }
             Slide.setPower(0);
 
-
-
-
-            frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             backLeft.setTargetPosition(-700);
             backRight.setTargetPosition(700);
