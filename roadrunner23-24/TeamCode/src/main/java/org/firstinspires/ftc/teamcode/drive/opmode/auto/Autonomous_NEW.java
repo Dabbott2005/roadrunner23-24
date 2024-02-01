@@ -352,8 +352,6 @@ public class Autonomous_NEW extends LinearOpMode {
             frontLeft.setPower(0);
             frontRight.setPower(0);
 
-
-
             sleep(1000);
 
             angleServo.setPosition(0);
