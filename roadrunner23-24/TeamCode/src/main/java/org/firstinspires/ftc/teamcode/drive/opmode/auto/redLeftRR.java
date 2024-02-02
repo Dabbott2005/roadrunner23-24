@@ -231,7 +231,6 @@ public class redLeftRR extends LinearOpMode {
                     }
                     break;
                 case TRAJ_RIGHT:
-                    drive.followTrajectorySequence(traj_right);
                     // Check if the drive class is busy following the trajectory
                     // Move on to the next state
                     if (!drive.isBusy()) {
@@ -376,12 +375,4 @@ public class redLeftRR extends LinearOpMode {
             // This might involve controlling a servo or another motor
         }
     }
-
-
-
-
-    /**
-     * Initialize the TensorFlow Object Detection processor.
-     */
-
 }

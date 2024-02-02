@@ -103,11 +103,11 @@ public class redRightRR extends LinearOpMode {
                     lift.Slide.setPower(1);
                 })
                 .waitSeconds(2)
-                .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
                 .waitSeconds(2)
-                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
