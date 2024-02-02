@@ -79,21 +79,23 @@ public class redRightRR extends LinearOpMode {
         TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(0, () -> {
                     lift.angleServo.setPosition(DEPO_ANGLE);
-                    lift.liftLeft.setTargetPosition(3100);
+                    lift.liftLeft.getCurrentPosition();
+                    lift.liftRight.getCurrentPosition();
                     lift.liftRight.setTargetPosition(3100);
+                    lift.liftLeft.setTargetPosition(3100);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(23,-42,(Math.toRadians(90))))
-                .waitSeconds(1)
+                .lineToSplineHeading(new Pose2d(25,-44,(Math.toRadians(90))))
+                .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
-                .waitSeconds(1)
+                .waitSeconds(2)
                 .back(6)
-                .lineToSplineHeading(new Pose2d(42,-39,(Math.toRadians(0))))
+                .lineToSplineHeading(new Pose2d(43,-42,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
@@ -105,7 +107,6 @@ public class redRightRR extends LinearOpMode {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
                 .waitSeconds(2)
-                .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);
@@ -113,28 +114,28 @@ public class redRightRR extends LinearOpMode {
                     lift.Slide.setPower(1);
                 })
                 .strafeRight(17)
-                .forward(7)
-                .waitSeconds(20)
                 .build();
 
         TrajectorySequence traj_middle = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(0, () -> {
                     lift.angleServo.setPosition(DEPO_ANGLE);
-                    lift.liftLeft.setTargetPosition(3100);
+                    lift.liftLeft.getCurrentPosition();
+                    lift.liftRight.getCurrentPosition();
                     lift.liftRight.setTargetPosition(3100);
+                    lift.liftLeft.setTargetPosition(3100);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(10,-36,(Math.toRadians(90))))
+                .lineToSplineHeading(new Pose2d(10,-34,(Math.toRadians(90))))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
                 .back(6)
-                .lineToSplineHeading(new Pose2d(40,-36,(Math.toRadians(0))))
+                .lineToSplineHeading(new Pose2d(43,-36,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
@@ -146,23 +147,22 @@ public class redRightRR extends LinearOpMode {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
                 .waitSeconds(2)
-                .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeRight(27)
-                .forward(15)
-                .waitSeconds(20)
+                .strafeRight(17)
                 .build();
 
         TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(0, () -> {
                     lift.angleServo.setPosition(DEPO_ANGLE);
-                    lift.liftLeft.setTargetPosition(3200);
-                    lift.liftRight.setTargetPosition(3200);
+                    lift.liftLeft.getCurrentPosition();
+                    lift.liftRight.getCurrentPosition();
+                    lift.liftRight.setTargetPosition(3100);
+                    lift.liftLeft.setTargetPosition(3100);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
@@ -170,36 +170,32 @@ public class redRightRR extends LinearOpMode {
                 })
                 .forward(2)
                 .strafeRight(2)
-                .lineToSplineHeading(new Pose2d(7,-36,(Math.toRadians(180))))
+                .lineToSplineHeading(new Pose2d(10,-32,(Math.toRadians(180))))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
-                .forward(4)
-                .back(10)
-                .lineToSplineHeading(new Pose2d(40,-29,(Math.toRadians(0))))
+                .back(6)
+                .lineToSplineHeading(new Pose2d(43,-31,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .waitSeconds(2)//
+                .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
                 .waitSeconds(2)
-                .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeRight(29)
-                .forward(7)
-                .waitSeconds(20)
+                .strafeRight(26)
                 .build();
 
         waitForStart();
@@ -225,11 +221,11 @@ public class redRightRR extends LinearOpMode {
                 case RIGHT:
                     currentState = State.TRAJ_RIGHT;
                     drive.followTrajectorySequenceAsync(traj_right);
+
                     break;
             }
             switch (currentState) {
                 case TRAJ_LEFT:
-                    drive.followTrajectorySequence(traj_left);
                     // Check if the drive class isn't busy
                     // `isBusy() == true` while it's following the trajectory
                     // Once `isBusy() == false`, the trajectory follower signals that it is finished
@@ -248,7 +244,6 @@ public class redRightRR extends LinearOpMode {
                     }
                     break;
                 case TRAJ_MIDDLE:
-                    drive.followTrajectorySequence(traj_middle);
                     // Check if the drive class is busy turning
                     // If not, move onto the next state, TRAJECTORY_3, once finished
                     if (!drive.isBusy()) {

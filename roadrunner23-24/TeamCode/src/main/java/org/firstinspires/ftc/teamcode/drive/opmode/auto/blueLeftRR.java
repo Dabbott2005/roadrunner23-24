@@ -18,7 +18,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name = "BlueLeftRR")
 public class blueLeftRR extends LinearOpMode {
     private static final double DOWN_ANGLE = 0.4;
-    private static final double DEPO_ANGLE = 0.2;
+    private static final double DEPO_ANGLE = 0.1;
     private static final double LEFT_OPEN = 1;
     private static final double RIGHT_OPEN = 0;
 
