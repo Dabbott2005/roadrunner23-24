@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 import static com.sun.tools.doclint.Entity.ang;
 import static com.sun.tools.doclint.Entity.or;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="DriverNew", group="Linear OpMode")
-
+@Disabled
 public class Teleop_NEW extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.

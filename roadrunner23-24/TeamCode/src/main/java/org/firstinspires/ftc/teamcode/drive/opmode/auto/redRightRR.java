@@ -20,15 +20,19 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.List;
 
 @Autonomous(name = "redRightRR")
 public class redRightRR extends LinearOpMode {
-    private static final double CLOSED_CLAW = 1;
-    private static final double OPEN_CLAW = 0;
-    private static final double OPEN_DEPO = 1;
-    private static final double CLOSED_DEPO = 0.5;
+    private static final double DOWN_ANGLE = 0.4;
+    private static final double DEPO_ANGLE = 0.2;
+    private static final double LEFT_OPEN = 1;
+    private static final double RIGHT_OPEN = 0;
 
     //ext motors
 
@@ -37,9 +41,6 @@ public class redRightRR extends LinearOpMode {
         TRAJ_LEFT,   //moving forward while turning to left spike mark
         TRAJ_MIDDLE,   //
         TRAJ_RIGHT,         //
-        TRAJ_BACKDROP_LEFT,//
-        TRAJ_BACKDROP_MIDDLE,
-        TRAJ_BACKDROP_RIGHT,
 
         IDLE,            // Our bot will enter the IDLE state when done
     }
@@ -47,191 +48,158 @@ public class redRightRR extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(11, -61, (Math.toRadians(90)));
+    Pose2d startPose = new Pose2d(12, -61, (Math.toRadians(90)));
 
-
-    private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-
-    // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
-    // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "redProp.tflite";
-    // TFOD_MODEL_FILE points to a model file stored onboard the Robot Controller's storage,
-    // this is used when uploading models directly to the RC using the model upload interface.
-    private static final String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/redProp.tflite";
-    // Define the labels recognized in the model for TFOD (must be in training order!)
-    private static final String[] LABELS = {
-            "redProp",
-    };
-
-    /**
-     * The variable to store our instance of the TensorFlow Object Detection processor.
-     */
-    private TfodProcessor tfod;
-
-    /**
-     * The variable to store our instance of the vision portal.
-     */
-    private VisionPortal visionPortal;
+    OpenCvWebcam webcam1;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        initTfod();
+        RedPropDectector detector = new RedPropDectector(telemetry);
+        webcam1.setPipeline(detector);
+
+        webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam1.startStreaming(1280,720, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Lift lift = new Lift(hardwareMap);
         drive.setPoseEstimate(startPose);
 
-        TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
-                .lineToSplineHeading(new Pose2d(11,-35,(Math.toRadians(180))))
-                .back(2)
+        TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(0, () -> {
-                    lift.claw.setPosition(CLOSED_CLAW);
-                    lift.setTargetPosition(Lift.ROTATE_DOWN);
-                    //set GripRotate to DOWN
+                    lift.angleServo.setPosition(DEPO_ANGLE);
+                    lift.liftLeft.getCurrentPosition();
+                    lift.liftRight.getCurrentPosition();
+                    lift.setTargetPosition(3100);
+                    lift.setTargetPosition(3100);
+                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftLeft.setPower(1);
+                    lift.liftRight.setPower(1);
+                })
+                .lineToSplineHeading(new Pose2d(25,-44,(Math.toRadians(90))))
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
-                    lift.claw.setPosition(OPEN_CLAW);
-                    //open claw
+                .back(6)
+                .lineToSplineHeading(new Pose2d(43,-42,(Math.toRadians(0))))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    lift.Slide.getCurrentPosition();
+                    lift.Slide.setTargetPosition(-1550);
+                    lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.Slide.setPower(1);
                 })
                 .waitSeconds(2)
-                .UNSTABLE_addTemporalMarkerOffset(2,() -> {
-                    lift.claw.setPosition(CLOSED_CLAW);
-                    lift.setTargetPosition(Lift.ROTATE_UP);
-                    //set GripRotate to UP
+                .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
+                    lift.rightServo.setPosition(RIGHT_OPEN);
                 })
-                .build();
-
-        TrajectorySequence traj_backdrop_left = drive.trajectorySequenceBuilder(traj_left.end())
-                .addTemporalMarker(1.5,() -> {
-                    lift.setTargetPosition(Lift.SLIDE_UP);
-                    //set LIFT to UP
-                })
-                .lineTo(new Vector2d(49, -32))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
-                    lift.deposit.setPosition(OPEN_DEPO);
-                    //set depo to OPEN
+                    lift.Slide.getCurrentPosition();
+                    lift.Slide.setTargetPosition(800);
+                    lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.Slide.setPower(1);
                 })
-                .forward(3)
-                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
-                    lift.deposit.setPosition(CLOSED_DEPO);
-                    lift.setTargetPosition(Lift.SLIDE_DOWN);
-                    //set depo to close
-                    //set LIFT to DOWN
-                })
-                .strafeLeft(27)
-
+                .strafeRight(17)
                 .build();
 
         TrajectorySequence traj_middle = drive.trajectorySequenceBuilder(startPose)
-                .lineToSplineHeading(new Pose2d(23,-24,(Math.toRadians(180))))
                 .addTemporalMarker(0, () -> {
-                    lift.claw.setPosition(CLOSED_CLAW);
-                    lift.setTargetPosition(Lift.ROTATE_DOWN);
-                    //set GripRotate to DOWN
+                    lift.angleServo.setPosition(DEPO_ANGLE);
+                    lift.liftLeft.getCurrentPosition();
+                    lift.liftRight.getCurrentPosition();
+                    lift.setTargetPosition(3100);
+                    lift.setTargetPosition(3100);
+                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftLeft.setPower(1);
+                    lift.liftRight.setPower(1);
+                })
+                .lineToSplineHeading(new Pose2d(10,-34,(Math.toRadians(90))))
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
-                    lift.claw.setPosition(OPEN_CLAW);
-                    //open claw
+                .back(6)
+                .lineToSplineHeading(new Pose2d(43,-36,(Math.toRadians(0))))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    lift.Slide.getCurrentPosition();
+                    lift.Slide.setTargetPosition(-1550);
+                    lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.Slide.setPower(1);
                 })
                 .waitSeconds(2)
-                .UNSTABLE_addTemporalMarkerOffset(2,() -> {
-                    lift.claw.setPosition(CLOSED_CLAW);
-                    lift.setTargetPosition(Lift.ROTATE_UP);
-                    //set GripRotate to UP
+                .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
+                    lift.rightServo.setPosition(RIGHT_OPEN);
                 })
-                .build();
-        TrajectorySequence traj_backdrop_middle = drive.trajectorySequenceBuilder(traj_middle.end())
-                .addTemporalMarker(1.5,() -> {
-                    lift.setTargetPosition(Lift.SLIDE_UP);
-                    //set LIFT to UP
-                })
-                .lineTo(new Vector2d(49, -36))
-                .waitSeconds(1)
+                .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
-                    lift.deposit.setPosition(OPEN_DEPO);
-                    //set depo to OPEN
+                    lift.Slide.getCurrentPosition();
+                    lift.Slide.setTargetPosition(800);
+                    lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.Slide.setPower(1);
                 })
-                .forward(3)
-                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
-                    lift.deposit.setPosition(CLOSED_DEPO);
-                    lift.setTargetPosition(Lift.SLIDE_DOWN);
-                    //set depo to close
-                    //set LIFT to DOWN
-                })
-                .strafeLeft(25)
-
+                .strafeRight(17)
                 .build();
 
-        TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
-                .lineToSplineHeading(new Pose2d(35,-35,(Math.toRadians(180))))
+        TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(0, () -> {
-                    lift.claw.setPosition(CLOSED_CLAW);
-                    lift.setTargetPosition(Lift.ROTATE_DOWN);
-                    //set GripRotate to DOWN
+                    lift.angleServo.setPosition(DEPO_ANGLE);
+                    lift.liftLeft.getCurrentPosition();
+                    lift.liftRight.getCurrentPosition();
+                    lift.setTargetPosition(3100);
+                    lift.setTargetPosition(3100);
+                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftLeft.setPower(1);
+                    lift.liftRight.setPower(1);
+                })
+                .forward(2)
+                .strafeRight(2)
+                .lineToSplineHeading(new Pose2d(10,-32,(Math.toRadians(180))))
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
-                    lift.claw.setPosition(OPEN_CLAW);
-                    //open claw
+                .back(6)
+                .lineToSplineHeading(new Pose2d(43,-31,(Math.toRadians(0))))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    lift.Slide.getCurrentPosition();
+                    lift.Slide.setTargetPosition(-1550);
+                    lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.Slide.setPower(1);
                 })
                 .waitSeconds(2)
-                .UNSTABLE_addTemporalMarkerOffset(2,() -> {
-                    lift.claw.setPosition(CLOSED_CLAW);
-                    lift.setTargetPosition(Lift.ROTATE_UP);
-                    //set GripRotate to UP
+                .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
+                    lift.rightServo.setPosition(RIGHT_OPEN);
                 })
+                .waitSeconds(2)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.Slide.getCurrentPosition();
+                    lift.Slide.setTargetPosition(800);
+                    lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.Slide.setPower(1);
+                })
+                .strafeRight(26)
                 .build();
 
-        TrajectorySequence traj_backdrop_right = drive.trajectorySequenceBuilder(traj_right.end())
-                .addTemporalMarker(1.5,() -> {
-                    lift.setTargetPosition(Lift.SLIDE_UP);
-                    //set LIFT to UP
-                })
-                .lineTo(new Vector2d(49, -42))
-                .waitSeconds(1)
-                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
-                    lift.deposit.setPosition(OPEN_DEPO);
-                    //set depo to OPEN
-                })
-                .forward(3)
-                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
-                    lift.deposit.setPosition(CLOSED_DEPO);
-                    lift.setTargetPosition(Lift.SLIDE_DOWN);
-                    //set depo to close
-                    //set LIFT to DOWN
-                })
-                .strafeLeft(19)
-
-                .build();
-
-        // Wait for the DS start button to be touched.
-        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
-        telemetry.addData(">", "Touch Play to start OpMode");
-        telemetry.update();
         waitForStart();
 
-        if (isStopRequested()) return;
-
-
-        if (opModeIsActive()) {
-            while (opModeIsActive()) {
-
-
-                telemetryTfod();
-
-
-                // Push telemetry to the Driver Station.
-                telemetry.update();
-
-                // Save CPU resources; can resume streaming when needed.
-
-
-                // Share the CPU.
-            }
-        }
 
 
 
@@ -239,20 +207,32 @@ public class redRightRR extends LinearOpMode {
         // Save more CPU resources when camera is no longer needed.
 
         while (opModeIsActive()  && !isStopRequested()) {
-            visionPortal.stopStreaming();
-            visionPortal.close();
-            visionPortal.setProcessorEnabled(tfod,false);
+            switch (detector.getLocation()) {
+                case LEFT:
+                    currentState = State.TRAJ_LEFT;
+                    drive.followTrajectorySequenceAsync(traj_left);
+                    break;
+
+                case MIDDLE:
+                    currentState = State.TRAJ_MIDDLE;
+                    drive.followTrajectorySequenceAsync(traj_middle);
+
+                    break;
+                case RIGHT:
+                    currentState = State.TRAJ_RIGHT;
+                    drive.followTrajectorySequenceAsync(traj_right);
+
+                    break;
+            }
             switch (currentState) {
                 case TRAJ_LEFT:
-                    drive.followTrajectorySequence(traj_left);
                     // Check if the drive class isn't busy
                     // `isBusy() == true` while it's following the trajectory
                     // Once `isBusy() == false`, the trajectory follower signals that it is finished
                     // We move on to the next state
                     // Make sure we use the async follow function
                     if (!drive.isBusy()) {
-                        currentState = State.TRAJ_BACKDROP_LEFT;
-                        drive.followTrajectorySequence(traj_backdrop_left);
+                        currentState = State.IDLE;
                     }
                     break;
                 case TRAJ_RIGHT:
@@ -260,39 +240,15 @@ public class redRightRR extends LinearOpMode {
                     // Check if the drive class is busy following the trajectory
                     // Move on to the next state
                     if (!drive.isBusy()) {
-                        currentState = State.TRAJ_BACKDROP_RIGHT;
-                        drive.followTrajectorySequence(traj_backdrop_right);
+                        currentState = State.IDLE;
                     }
                     break;
                 case TRAJ_MIDDLE:
                     // Check if the drive class is busy turning
                     // If not, move onto the next state, TRAJECTORY_3, once finished
                     if (!drive.isBusy()) {
-                        currentState = State.TRAJ_BACKDROP_MIDDLE;
-                        drive.followTrajectorySequence(traj_backdrop_middle);
-                    }
-                    break;
-                case TRAJ_BACKDROP_LEFT:
-                    // Check if the drive class is busy following the trajectory
-                    // If not, move onto the next state, WAIT_1
-                    if (!drive.isBusy()) {
                         currentState = State.IDLE;
-
                     }
-                    break;
-                case TRAJ_BACKDROP_MIDDLE:
-
-                    if (!drive.isBusy()) {
-                        currentState = State.IDLE;
-
-                    }
-                    break;
-                case TRAJ_BACKDROP_RIGHT:
-                    if (!drive.isBusy()) {
-                        currentState = State.IDLE;
-
-                    }
-
                     break;
                 case IDLE:
                     // Do nothing in IDLE
@@ -300,6 +256,8 @@ public class redRightRR extends LinearOpMode {
                     // This concludes the autonomous program
                     break;
             }
+
+            webcam1.stopStreaming();
             drive.update();
 
             lift.update();
@@ -319,15 +277,25 @@ public class redRightRR extends LinearOpMode {
         }
     }// end runOpMode()
     public class Lift {
-        private DcMotorEx leftSlide;
-        private DcMotorEx rightSlide;
-        private DcMotorEx gripRotate;
+        private DcMotor Slide = null;
+
+        private DcMotor Intake = null;
+
+        private DcMotor liftLeft = null;
+
+        private DcMotor liftRight = null;
+
+
+        //Servos
+
 
         //servos
-        public Servo claw = null;
-        public Servo deposit = null;
+        private Servo leftServo = null;
+        private Servo rightServo = null;
+        private Servo angleServo = null;
+        private Servo planeServo = null;
 
-        private static final double KP = 0.004; // Placeholder value, adjust as needed
+        private static final double KP = 0.04; // Placeholder value, adjust as needed
         private static final double KI = 0.0; // Placeholder value, adjust as needed
         private static final double KD = 0.0001; // Placeholder value, adjust as needed
 
@@ -336,38 +304,29 @@ public class redRightRR extends LinearOpMode {
         private double previousError;
         private double integral;
 
-        private static final int SLIDE_UP = 1100;  // Example target position for linear slides
-        private static final int SLIDE_DOWN = 0;  // Example target position for linear slides
-        private static final int ROTATE_UP = 0;  // Example target position for grip rotation
+        private static final int SLIDE_UP = -3100;  // Example target position for linear slides
+        private static final int SLIDE_DOWN = 3000;  // Example target position for linear slides
+        private static final int ROTATE_UP = 1200;  // Example target position for grip rotation
 
-        private static final int ROTATE_DOWN = 400;  // Example target position for linear slides
+        private static final int ROTATE_DOWN = -1200;  // Example target position for linear slides
 
 
 
         public Lift(HardwareMap hardwareMap) {
-            leftSlide = hardwareMap.get(DcMotorEx.class, "leftslide");
-            rightSlide = hardwareMap.get(DcMotorEx.class, "rightslide");
-            gripRotate = hardwareMap.get(DcMotorEx.class, "griprotation");
+            Intake = hardwareMap.get(DcMotor.class, "Intake");
+            Slide = hardwareMap.get(DcMotor.class, "Slide");
+            liftLeft = hardwareMap.get(DcMotor.class, "liftLeft");
+            liftRight = hardwareMap.get(DcMotor.class, "liftRight");
 
-            claw = hardwareMap.get(Servo.class, "clawservo");
-            deposit = hardwareMap.get(Servo.class, "depositservo");
 
-            leftSlide.setDirection(DcMotor.Direction.FORWARD);
-            rightSlide.setDirection(DcMotor.Direction.FORWARD);
-            gripRotate.setDirection(DcMotor.Direction.FORWARD);
-
-            leftSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            rightSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            gripRotate.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            leftSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            gripRotate.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            // Set zero power behavior
-            leftSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            rightSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            gripRotate.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            leftServo = hardwareMap.get(Servo.class, "leftServo");
+            rightServo = hardwareMap.get(Servo.class, "rightServo");
+            angleServo = hardwareMap.get(Servo.class, "angleServo");
+            planeServo = hardwareMap.get(Servo.class, "planeservo");
+            Intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             // Beep boop this is the the constructor for the lift
             // Assume this sets up the lift hardware
@@ -386,9 +345,9 @@ public class redRightRR extends LinearOpMode {
             double output = KP * error + KI * integral + KD * derivative;
 
             // Apply the output to the motor
-            rightSlide.setPower(output);
-            leftSlide.setPower(output);
-            gripRotate.setPower(output);
+            Slide.setPower(output);
+            liftLeft.setPower(output);
+            liftRight.setPower(output);
 
             // Update previous error for the next iteration
             previousError = error;
@@ -400,24 +359,24 @@ public class redRightRR extends LinearOpMode {
         }
         public void lowerLift() {
             // Implement logic to lower the lift to a predefined position
-            leftSlide.setTargetPosition(SLIDE_DOWN);
-            rightSlide.setTargetPosition(SLIDE_DOWN);
+            liftLeft.setTargetPosition(SLIDE_DOWN);
+            liftRight.setTargetPosition(SLIDE_DOWN);
         }
 
         public void raiseLift() {
             // Implement logic to raise the lift to a predefined position
-            leftSlide.setTargetPosition(SLIDE_UP);
-            rightSlide.setTargetPosition(SLIDE_UP);
+            liftLeft.setTargetPosition(SLIDE_UP);
+            liftRight.setTargetPosition(SLIDE_UP);
         }
 
-        public void raiseClaw() {
-            gripRotate.setTargetPosition(ROTATE_UP);
+        public void raiseSlide() {
+            Slide.setTargetPosition(ROTATE_UP);
             // Implement logic to open the claw (if applicable)
             // This might involve controlling a servo or another motor
         }
 
-        public void lowerClaw() {
-            gripRotate.setTargetPosition(ROTATE_DOWN);
+        public void lowerSlide() {
+            Slide.setTargetPosition(ROTATE_DOWN);
             // Implement logic to close the claw (if applicable)
             // This might involve controlling a servo or another motor
         }
@@ -429,110 +388,5 @@ public class redRightRR extends LinearOpMode {
     /**
      * Initialize the TensorFlow Object Detection processor.
      */
-    private void initTfod() {
 
-        // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder()
-
-                // With the following lines commented out, the default TfodProcessor Builder
-                // will load the default model for the season. To define a custom model to load,
-                // choose one of the following:
-                //   Use setModelAssetName() if the custom TF Model is built in as an asset (AS only).
-                //   Use setModelFileName() if you have downloaded a custom team model to the Robot Controller.
-                //.setModelAssetName(TFOD_MODEL_ASSET)
-                .setModelFileName(TFOD_MODEL_FILE)
-
-                // The following default settings are available to un-comment and edit as needed to
-                // set parameters for custom models.
-                .setModelLabels(LABELS)
-                .setIsModelTensorFlow2(true)
-                //.setIsModelQuantized(true)
-                //.setModelInputSize(300)
-                .setModelAspectRatio(16.0 / 9.0)
-
-                .build();
-
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-
-        // Set the camera (webcam vs. built-in RC phone camera).
-        if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        } else {
-            builder.setCamera(BuiltinCameraDirection.BACK);
-        }
-
-        // Choose a camera resolution. Not all cameras support all resolutions.
-        builder.setCameraResolution(new Size(1280, 720));
-
-        // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableLiveView(true);
-
-        // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
-        // Choose whether or not LiveView stops if no processors are enabled.
-        // If set "true", monitor shows solid orange screen if no processors enabled.
-        // If set "false", monitor shows camera view without annotations.
-        //builder.setAutoStopLiveView(false);
-
-        // Set and enable the processor.
-        builder.addProcessor(tfod);
-
-        // Build the Vision Portal, using the above settings.
-        visionPortal = builder.build();
-
-        // Set confidence threshold for TFOD recognitions, at any time.
-        tfod.setMinResultConfidence(0.75f);
-
-        // Disable or re-enable the TFOD processor at any time.
-        visionPortal.setProcessorEnabled(tfod, true);
-
-    }   // end method initTfod()
-
-    /**
-     * Add telemetry about TensorFlow Object Detection (TFOD) recognitions.
-     */
-    private void telemetryTfod() {
-
-
-        List<Recognition> currentRecognitions = tfod.getFreshRecognitions();
-
-        telemetry.addData("# Objects Detected", currentRecognitions.size());
-        if (currentRecognitions.size() > 0) {
-
-
-
-        // Step through the list of recognitions and display info for each one.
-        for (Recognition recognition : currentRecognitions) {
-            double x = (recognition.getLeft() + recognition.getRight()) / 2;
-            double y = (recognition.getTop() + recognition.getBottom()) / 2;
-
-
-            telemetry.addData("", " ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-
-            if (x < 400) {
-                telemetry.addData("Object Position", "Left");
-                currentState = State.TRAJ_LEFT;
-
-                // Perform actions for the object on the left.
-                // Example: drive left or execute left-specific commands.
-            } else if (x > 400) {
-                telemetry.addData("Object Position", "Middle");
-                currentState = State.TRAJ_MIDDLE;
-
-            }
-
-        }// end for() loop
-
-        }else{
-            telemetry.addData("No objects detected","defaulting to Right");
-            currentState = State.TRAJ_RIGHT;
-
-        }
-
-    }
 }

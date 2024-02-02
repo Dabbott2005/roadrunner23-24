@@ -29,7 +29,7 @@ public class BluePropDectector extends OpenCvPipeline {
     static final Rect RIGHT_ROI = new Rect(
             new Point(852,0),
             new Point(1280,720));
-    static double PERCENT_COLOR_THRESHOLD = 0.2;
+    static double PERCENT_COLOR_THRESHOLD = 0.05;
     public BluePropDectector(Telemetry t) {telemetry = t; }
     @Override
     public Mat processFrame(Mat input) {
