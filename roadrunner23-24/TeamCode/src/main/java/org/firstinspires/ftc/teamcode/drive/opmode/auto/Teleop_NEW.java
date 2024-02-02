@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
-import static com.sun.tools.doclint.Entity.ang;
-import static com.sun.tools.doclint.Entity.or;
-
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="DriverNew", group="Linear OpMode")
-@Disabled
+
 public class Teleop_NEW extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -37,7 +33,7 @@ public class Teleop_NEW extends LinearOpMode {
     private Servo angleServo = null;
     private Servo planeServo = null;
 
-    private Servo holdServo = null;
+    private Servo hangServo = null;
 
 
 
@@ -61,6 +57,7 @@ public class Teleop_NEW extends LinearOpMode {
         rightServo = hardwareMap.get(Servo.class, "rightServo");
         angleServo = hardwareMap.get(Servo.class, "angleServo");
         planeServo = hardwareMap.get(Servo.class, "planeservo");
+        hangServo = hardwareMap.get(Servo.class,"hangServo");
 
 
         // ########################################################################################
@@ -134,6 +131,12 @@ public class Teleop_NEW extends LinearOpMode {
             rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
             rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
             */
+            if(gamepad1.left_trigger>0.1) {
+                leftFrontPower  /= 2;
+                rightFrontPower /= 2;
+                leftBackPower   /= 2;
+                rightBackPower  /= 2;
+            }
 
             // Send calculated power to wheels
             leftFrontDrive.setPower(leftFrontPower);
@@ -145,10 +148,15 @@ public class Teleop_NEW extends LinearOpMode {
 
             // Designate buttons
             while(gamepad1.a) {
-                planeServo.setPosition(-1);
+                planeServo.setPosition(.5);
+                sleep(500);
+                planeServo.setPosition(0);
             }
-            while(gamepad1.b) {
-                planeServo.setPosition(.3);
+            while(gamepad1.y){
+                hangServo.setPosition(0.1);
+            }
+            while (gamepad1.x) {
+                hangServo.setPosition(.5);
             }
 
             if (gamepad2.a) {
@@ -165,7 +173,9 @@ public class Teleop_NEW extends LinearOpMode {
             if(gamepad2.y) {
                 leftServo.setPosition(1);
                 rightServo.setPosition(0);
+                Intake.setPower(-.4);
             }
+
             if((!gamepad2.y) && (!gamepad2.right_bumper) && (!gamepad2.left_bumper)) {
                 leftServo.setPosition(.5);
                 rightServo.setPosition(.5);
@@ -174,23 +184,18 @@ public class Teleop_NEW extends LinearOpMode {
             if(gamepad2.right_bumper) {
                 rightServo.setPosition(0);
             }
-
             if(gamepad2.left_bumper) {
                 leftServo.setPosition(1);
             }
-
             if(gamepad2.dpad_up) {
-                angleServo.setPosition(1); // ground level
+                angleServo.setPosition(.5); // ground level
             }
-
             if(gamepad2.dpad_down) {
-                angleServo.setPosition(0);
+                angleServo.setPosition(.1);
             }
-
             if (gamepad2.dpad_right) {
-                angleServo.setPosition(.6);
+                angleServo.setPosition(.2);
             }
-
             if(gamepad2.dpad_left) {
                 angleServo.setPosition(.4);
             }

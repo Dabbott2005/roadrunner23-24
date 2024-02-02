@@ -30,7 +30,7 @@ public class RedPropDectector extends OpenCvPipeline {
     static final Rect RIGHT_ROI = new Rect(
             new Point(852,0),
             new Point(1280,720));
-    static double PERCENT_COLOR_THRESHOLD = 0.2;
+    static double PERCENT_COLOR_THRESHOLD = 0.05;
     public RedPropDectector(Telemetry t) {telemetry = t; }
     @Override
     public Mat processFrame(Mat input) {
@@ -75,11 +75,6 @@ public class RedPropDectector extends OpenCvPipeline {
         if (propRight) {
             location = Location.RIGHT;
             telemetry.addData("Prop Location", "RIGHT");
-
-
-        } else {
-            location = Location.RIGHT;
-            telemetry.addData("Prop Location", "NOT DETECTED - RIGHT");
 
         }
         telemetry.update();

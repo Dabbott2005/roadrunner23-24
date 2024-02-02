@@ -46,7 +46,7 @@ public class blueRightRR extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        RedPropDectector detector = new RedPropDectector(telemetry);
+        BluePropDectector detector = new BluePropDectector(telemetry);
         webcam1.setPipeline(detector);
 
         webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -69,8 +69,8 @@ public class blueRightRR extends LinearOpMode {
                     lift.angleServo.setPosition(DEPO_ANGLE);
                     lift.liftLeft.getCurrentPosition();
                     lift.liftRight.getCurrentPosition();
-                    lift.setTargetPosition(3100);
-                    lift.setTargetPosition(3100);
+                    lift.liftLeft.setTargetPosition(3100);
+                    lift.liftRight.setTargetPosition(3100);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
@@ -112,8 +112,8 @@ public class blueRightRR extends LinearOpMode {
                     lift.angleServo.setPosition(DEPO_ANGLE);
                     lift.liftLeft.getCurrentPosition();
                     lift.liftRight.getCurrentPosition();
-                    lift.setTargetPosition(3100);
-                    lift.setTargetPosition(3100);
+                    lift.liftLeft.setTargetPosition(3100);
+                    lift.liftRight.setTargetPosition(3100);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
@@ -155,8 +155,8 @@ public class blueRightRR extends LinearOpMode {
                     lift.angleServo.setPosition(DEPO_ANGLE);
                     lift.liftLeft.getCurrentPosition();
                     lift.liftRight.getCurrentPosition();
-                    lift.setTargetPosition(3100);
-                    lift.setTargetPosition(3100);
+                    lift.liftLeft.setTargetPosition(3100);
+                    lift.liftRight.setTargetPosition(3100);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
@@ -222,6 +222,7 @@ public class blueRightRR extends LinearOpMode {
             }
             switch (currentState) {
                 case TRAJ_LEFT:
+                    drive.followTrajectorySequence(traj_left);
                     // Check if the drive class isn't busy
                     // `isBusy() == true` while it's following the trajectory
                     // Once `isBusy() == false`, the trajectory follower signals that it is finished
@@ -240,6 +241,7 @@ public class blueRightRR extends LinearOpMode {
                     }
                     break;
                 case TRAJ_MIDDLE:
+                    drive.followTrajectorySequence(traj_middle);
                     // Check if the drive class is busy turning
                     // If not, move onto the next state, TRAJECTORY_3, once finished
                     if (!drive.isBusy()) {

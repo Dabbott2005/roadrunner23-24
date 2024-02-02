@@ -34,8 +34,8 @@ public class BluePropDectector extends OpenCvPipeline {
     @Override
     public Mat processFrame(Mat input) {
         Imgproc.cvtColor(input, mat, Imgproc.COLOR_RGB2HSV);
-        Scalar lowHSV = new Scalar(110, 50, 50);
-        Scalar highHSV = new Scalar(130, 255, 255);
+        Scalar lowHSV = new Scalar(90, 50, 70);
+        Scalar highHSV = new Scalar(128, 255, 255);
 
         Core.inRange(mat, lowHSV, highHSV, mat);
         Mat left = mat.submat(LEFT_ROI);
@@ -74,11 +74,6 @@ public class BluePropDectector extends OpenCvPipeline {
         if (propRight) {
             location = Location.RIGHT;
             telemetry.addData("Prop Location", "RIGHT");
-
-
-        } else {
-            location = Location.RIGHT;
-            telemetry.addData("Prop Location", "NOT DETECTED - RIGHT");
 
         }
         telemetry.update();
