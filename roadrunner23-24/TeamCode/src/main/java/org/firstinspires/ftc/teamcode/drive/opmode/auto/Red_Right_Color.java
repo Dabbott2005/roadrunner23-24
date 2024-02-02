@@ -122,6 +122,7 @@ public class Red_Right_Color extends LinearOpMode {
                 //while (!(liftRight.getCurrentPosition() == liftRight.getTargetPosition())) {}
                 while (liftLeft.isBusy()){
                     telemetry.addData("Lift at", liftLeft.getCurrentPosition());
+                    telemetry.update();
                 }
                 liftLeft.setPower(0);
                 liftRight.setPower(0);

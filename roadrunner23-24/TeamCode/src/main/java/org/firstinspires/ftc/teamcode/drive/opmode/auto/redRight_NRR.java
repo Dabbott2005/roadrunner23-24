@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+@Disabled
 @Autonomous(name="redRight")
 public class redRight_NRR extends LinearOpMode {
         private DcMotor frontLeft = null;

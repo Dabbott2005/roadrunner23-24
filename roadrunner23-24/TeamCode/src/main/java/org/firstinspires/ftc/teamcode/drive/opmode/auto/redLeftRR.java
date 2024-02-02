@@ -15,8 +15,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@Autonomous(name = "BlueLeftRR")
-public class blueLeftRR extends LinearOpMode {
+@Autonomous(name = "redLeftRR")
+public class redLeftRR extends LinearOpMode {
     private static final double DOWN_ANGLE = 0.4;
     private static final double DEPO_ANGLE = 0.2;
     private static final double LEFT_OPEN = 1;
@@ -36,7 +36,7 @@ public class blueLeftRR extends LinearOpMode {
 
     State currentState = State.IDLE;
 
-    Pose2d startPose = new Pose2d(12, 61, (Math.toRadians(270)));
+    Pose2d startPose = new Pose2d(-36, -61, (Math.toRadians(90)));
 
     OpenCvWebcam webcam1;
 
@@ -46,7 +46,7 @@ public class blueLeftRR extends LinearOpMode {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
 
-        BluePropDectector detector = new BluePropDectector(telemetry);
+        RedPropDectector detector = new RedPropDectector(telemetry);
         webcam1.setPipeline(detector);
 
         webcam1.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
@@ -65,6 +65,8 @@ public class blueLeftRR extends LinearOpMode {
         drive.setPoseEstimate(startPose);
 
         TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
+                .forward(2)
+                .strafeLeft(2)
                 .addTemporalMarker(0, () -> {
                     lift.angleServo.setPosition(DEPO_ANGLE);
                     lift.liftLeft.getCurrentPosition();
@@ -76,14 +78,16 @@ public class blueLeftRR extends LinearOpMode {
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(10,37,(Math.toRadians(180))))
+                .lineToSplineHeading(new Pose2d(-34,-36,(Math.toRadians(0))))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
                 .back(6)
-                .lineToSplineHeading(new Pose2d(43,31,(Math.toRadians(0))))
+                .strafeLeft(23)
+                .forward(76)
+                .lineToSplineHeading(new Pose2d(43,-42,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
@@ -116,14 +120,16 @@ public class blueLeftRR extends LinearOpMode {
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(20,34,(Math.toRadians(270))))
+                .lineToSplineHeading(new Pose2d(-49,-27,(Math.toRadians(0))))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
                 .back(6)
-                .lineToSplineHeading(new Pose2d(43,36,(Math.toRadians(0))))
+                .strafeLeft(15)
+                .forward(80)
+                .lineToSplineHeading(new Pose2d(43,-36,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
@@ -141,7 +147,7 @@ public class blueLeftRR extends LinearOpMode {
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeLeft(23)
+                .strafeLeft(22)
                 .build();
 
         TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
@@ -156,14 +162,17 @@ public class blueLeftRR extends LinearOpMode {
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(32,37,(Math.toRadians(270))))
+                .forward(50)
+                .lineToSplineHeading(new Pose2d(-44,-16,(Math.toRadians(270))))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
                 .back(6)
-                .lineToSplineHeading(new Pose2d(43,40,(Math.toRadians(0))))
+                .turn(Math.toRadians(90))
+                .forward(80)
+                .lineToSplineHeading(new Pose2d(43,-31,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
@@ -181,7 +190,7 @@ public class blueLeftRR extends LinearOpMode {
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeLeft(19)
+                .strafeLeft(22)
                 .build();
 
         waitForStart();
@@ -222,7 +231,6 @@ public class blueLeftRR extends LinearOpMode {
                     }
                     break;
                 case TRAJ_RIGHT:
-                    drive.followTrajectorySequence(traj_right);
                     // Check if the drive class is busy following the trajectory
                     // Move on to the next state
                     if (!drive.isBusy()) {
@@ -367,12 +375,4 @@ public class blueLeftRR extends LinearOpMode {
             // This might involve controlling a servo or another motor
         }
     }
-
-
-
-
-    /**
-     * Initialize the TensorFlow Object Detection processor.
-     */
-
 }

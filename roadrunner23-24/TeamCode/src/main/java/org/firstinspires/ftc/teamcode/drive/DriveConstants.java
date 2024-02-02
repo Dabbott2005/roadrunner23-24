@@ -21,8 +21,8 @@ public class DriveConstants {
     /*
      * These are motor constants that should be listed online for your motors.
      */
-    public static final double TICKS_PER_REV = 420;
-    public static final double MAX_RPM = 400;
+    public static final double TICKS_PER_REV = 336;
+    public static final double MAX_RPM = 500;
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
@@ -45,8 +45,8 @@ public class DriveConstants {
      * convenience. Make sure to exclude any gear ratio included in MOTOR_CONFIG from GEAR_RATIO.
      */
     public static double WHEEL_RADIUS = 1.4763; // in
-    public static double GEAR_RATIO = 1.033; // output (wheel) speed / input (motor) speed
-    public static double TRACK_WIDTH = 16; // in
+    public static double GEAR_RATIO = 1.0; // output (wheel) speed / input (motor) speed
+    public static double TRACK_WIDTH = 14; // in
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using
@@ -74,9 +74,9 @@ public class DriveConstants {
      * Adjust the orientations here to match your robot. See the FTC SDK documentation for details.
      */
     public static RevHubOrientationOnRobot.LogoFacingDirection LOGO_FACING_DIR =
-            RevHubOrientationOnRobot.LogoFacingDirection.UP;
+            RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
     public static RevHubOrientationOnRobot.UsbFacingDirection USB_FACING_DIR =
-            RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+            RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
 
     public static double encoderTicksToInches(double ticks) {
