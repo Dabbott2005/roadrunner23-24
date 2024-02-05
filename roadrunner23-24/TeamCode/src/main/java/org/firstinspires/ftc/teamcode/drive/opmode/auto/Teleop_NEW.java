@@ -147,7 +147,7 @@ public class Teleop_NEW extends LinearOpMode {
 
 
             // Designate buttons
-            while(gamepad1.a) {
+            while(gamepad1.b) {
                 planeServo.setPosition(.5);
                 sleep(500);
                 planeServo.setPosition(0);
@@ -164,7 +164,7 @@ public class Teleop_NEW extends LinearOpMode {
 
             }
             if (gamepad2.b) {
-                Intake.setPower(1);
+                Intake.setPower(.5);
             }
             if ((!gamepad2.b) && (!gamepad2.a)) {
                 Intake.setPower(0);

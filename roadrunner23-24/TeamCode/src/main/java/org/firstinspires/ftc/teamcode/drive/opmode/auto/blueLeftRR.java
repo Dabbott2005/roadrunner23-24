@@ -18,7 +18,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 @Autonomous(name = "BlueLeftRR")
 public class blueLeftRR extends LinearOpMode {
     private static final double DOWN_ANGLE = 0.4;
-    private static final double DEPO_ANGLE = 0.2;
+    private static final double DEPO_ANGLE = 0.1;
     private static final double LEFT_OPEN = 1;
     private static final double RIGHT_OPEN = 0;
 
@@ -76,25 +76,26 @@ public class blueLeftRR extends LinearOpMode {
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(10,37,(Math.toRadians(180))))
+                .lineToSplineHeading(new Pose2d(9,37,(Math.toRadians(180))))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
                 .back(6)
-                .lineToSplineHeading(new Pose2d(41,31,(Math.toRadians(0))))
+                .lineToSplineHeading(new Pose2d(41,32,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
+                .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);
@@ -111,21 +112,22 @@ public class blueLeftRR extends LinearOpMode {
                     lift.angleServo.setPosition(DEPO_ANGLE);
                     lift.liftLeft.getCurrentPosition();
                     lift.liftRight.getCurrentPosition();
-                    lift.liftLeft.setTargetPosition(3100);
-                    lift.liftRight.setTargetPosition(3100);
+                    lift.liftLeft.setTargetPosition(3200);
+                    lift.liftRight.setTargetPosition(3200);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(18,34,(Math.toRadians(270))))
-                .waitSeconds(2)
+                .lineToSplineHeading(new Pose2d(13,35,(Math.toRadians(270))))
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
-                .waitSeconds(2)
-                .back(6)
-                .lineToSplineHeading(new Pose2d(43,36,(Math.toRadians(0))))
+                .waitSeconds(1)
+                .forward(3)
+                .back(9)
+                .lineToSplineHeading(new Pose2d(43,39,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
@@ -137,6 +139,7 @@ public class blueLeftRR extends LinearOpMode {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
                 .waitSeconds(2)
+                .back(5)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);
@@ -144,7 +147,7 @@ public class blueLeftRR extends LinearOpMode {
                     lift.Slide.setPower(1);
                 })
                 .strafeLeft(26)
-                .forward(16)
+                .forward(12)
                 .waitSeconds(20)
                 .build();
 
@@ -160,14 +163,15 @@ public class blueLeftRR extends LinearOpMode {
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(23,37,(Math.toRadians(270))))
-                .waitSeconds(2)
+                .lineToSplineHeading(new Pose2d(23,40,(Math.toRadians(270))))
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
-                .waitSeconds(2)
-                .back(6)
-                .lineToSplineHeading(new Pose2d(42,40,(Math.toRadians(0))))
+                .waitSeconds(1)
+                .forward(3)
+                .back(9)
+                .lineToSplineHeading(new Pose2d(42.5,43,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
@@ -179,6 +183,7 @@ public class blueLeftRR extends LinearOpMode {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
                 .waitSeconds(2)
+                .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);

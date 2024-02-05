@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -29,6 +30,10 @@ import java.util.List;
 
 @Autonomous(name = "redRightRR")
 public class redRightRR extends LinearOpMode {
+
+    private ColorSensor colorSensorRight = null;
+    private ColorSensor colorSensorLeft = null;
+
     private static final double DOWN_ANGLE = 0.4;
     private static final double DEPO_ANGLE = 0.1;
     private static final double LEFT_OPEN = 1;
@@ -72,6 +77,7 @@ public class redRightRR extends LinearOpMode {
 
             }
         });
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Lift lift = new Lift(hardwareMap);
         drive.setPoseEstimate(startPose);
@@ -100,11 +106,11 @@ public class redRightRR extends LinearOpMode {
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     lift.Slide.getCurrentPosition();
@@ -112,7 +118,7 @@ public class redRightRR extends LinearOpMode {
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeRight(17)
+                .strafeRight(19)
                 .forward(7)
                 .waitSeconds(20)
                 .build();
@@ -128,11 +134,11 @@ public class redRightRR extends LinearOpMode {
                     lift.liftRight.setPower(1);
                 })
                 .lineToSplineHeading(new Pose2d(10,-36,(Math.toRadians(90))))
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .back(6)
                 .lineToSplineHeading(new Pose2d(40,-36,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
@@ -141,11 +147,11 @@ public class redRightRR extends LinearOpMode {
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
@@ -171,11 +177,11 @@ public class redRightRR extends LinearOpMode {
                 .forward(2)
                 .strafeRight(2)
                 .lineToSplineHeading(new Pose2d(7,-36,(Math.toRadians(180))))
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .forward(4)
                 .back(10)
                 .lineToSplineHeading(new Pose2d(40,-29,(Math.toRadians(0))))
@@ -185,11 +191,11 @@ public class redRightRR extends LinearOpMode {
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .waitSeconds(2)//
+                .waitSeconds(1)//
                 .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
-                .waitSeconds(2)
+                .waitSeconds(1)
                 .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
@@ -197,7 +203,7 @@ public class redRightRR extends LinearOpMode {
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeRight(29)
+                .strafeRight(27)
                 .forward(7)
                 .waitSeconds(20)
                 .build();
