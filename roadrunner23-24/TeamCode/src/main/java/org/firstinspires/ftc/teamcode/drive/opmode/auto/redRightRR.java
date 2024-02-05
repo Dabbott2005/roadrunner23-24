@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.opmode.auto;
 
-import android.app.Activity;
-import android.graphics.Color;
 import android.util.Size;
-import android.view.View;
 
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -18,6 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -35,23 +33,44 @@ import java.util.List;
 
 @Autonomous(name = "redRightRR")
 public class redRightRR extends LinearOpMode {
+    float getBrightnessRight() {
+        NormalizedRGBA colors = colorSensorRight.getNormalizedColors();
+        telemetry.addData("Light Level (0 to 1)",  "%4.2f", colors.alpha);
+        telemetry.update();
+
+        return colors.alpha;
+    }
+    float getBrightnessLeft() {
+        NormalizedRGBA colors = colorSensorLeft.getNormalizedColors();
+        telemetry.addData("Light Level (0 to 1)",  "%4.2f", colors.alpha);
+        telemetry.update();
+
+        return colors.alpha;
+    }
+    private NormalizedColorSensor colorSensorRight = null;
+    private NormalizedColorSensor colorSensorLeft = null;
+
+    static final double     WHITE_THRESHOLD = 0.5;  // spans between 0.0 - 1.0 from dark to light
+    //TO IMPLEMENT SENSOR LOGIC: detecting white means WHITE_THRESHOLD>.5
+
     private static final double DOWN_ANGLE = 0.4;
     private static final double DEPO_ANGLE = 0.1;
     private static final double LEFT_OPEN = 1;
     private static final double RIGHT_OPEN = 0;
 
     //ext motors
-   ColorSensor rightColorSensorV2;
-   ColorSensor leftColorSensorV2;
 
 
     enum State {
         TRAJ_LEFT,   //moving forward while turning to left spike mark
         TRAJ_MIDDLE,   //
-        TRAJ_RIGHT,         //
+        TRAJ_RIGHT,
+
         TRAJ_TO_STACK,
+
         TRAJ_TO_BACKDROP,
-        IDLE            // Our bot will enter the IDLE state when done
+
+        IDLE,            // Our bot will enter the IDLE state when done
     }
 
 
@@ -61,27 +80,8 @@ public class redRightRR extends LinearOpMode {
 
     OpenCvWebcam webcam1;
 
-
-
     @Override
     public void runOpMode() throws InterruptedException {
-        rightColorSensorV2 = hardwareMap.get(ColorSensor.class,"rightColorV2");
-        leftColorSensorV2 = hardwareMap.get(ColorSensor.class,"leftColorV2");
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValues[] = {255F, 255F, 255F};
-
-        // values is a reference to the hsvValues array.
-        final float values[] = hsvValues;
-
-        // sometimes it helps to multiply the raw RGB values with a scale factor
-        // to amplify/attentuate the measured values.
-        final double SCALE_FACTOR = 255;
-
-        // get a reference to the RelativeLayout so we can change the background
-        // color of the Robot Controller app to match the hue detected by the RGB sensor.
-        int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
-        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
-
         WebcamName webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam1 = OpenCvCameraFactory.getInstance().createWebcam(webcamName, cameraMonitorViewId);
@@ -100,68 +100,87 @@ public class redRightRR extends LinearOpMode {
 
             }
         });
+
+        colorSensorRight = hardwareMap.get(NormalizedColorSensor.class, "Right Color");
+        colorSensorLeft = hardwareMap.get(NormalizedColorSensor.class, "Left Color");
+
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Lift lift = new Lift(hardwareMap);
         drive.setPoseEstimate(startPose);
 
+        // If necessary, turn ON the white LED (if there is no LED switch on the sensor)
+        if (colorSensorRight instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensorRight).enableLight(true);
+        }
+        if (colorSensorLeft instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensorLeft).enableLight(true);
+        }
+
+        // Some sensors allow you to set your light sensor gain for optimal sensitivity...
+        // See the SensorColor sample in this folder for how to determine the optimal gain.
+        // A gain of 15 causes a Rev Color Sensor V2 to produce an Alpha value of 1.0 at about 1.5" above the floor.
+        colorSensorRight.setGain(15);
+        colorSensorLeft.setGain(15);
+
+
+
+
         TrajectorySequence traj_right = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(0, () -> {
                     lift.angleServo.setPosition(DEPO_ANGLE);
-                    lift.liftLeft.getCurrentPosition();
-                    lift.liftRight.getCurrentPosition();
-                    lift.liftRight.setTargetPosition(2900);
-                    lift.liftLeft.setTargetPosition(2900);
+                    lift.liftLeft.setTargetPosition(3100);
+                    lift.liftRight.setTargetPosition(3100);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(25,-44,(Math.toRadians(90))))
+                .lineToSplineHeading(new Pose2d(23,-42,(Math.toRadians(90))))
+                .waitSeconds(1)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
-                .waitSeconds(.5)
+                .waitSeconds(1)
                 .back(6)
-                .lineToSplineHeading(new Pose2d(43,-42,(Math.toRadians(0))))
+                .lineToSplineHeading(new Pose2d(42,-39,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
-                    lift.Slide.setTargetPosition(-1350);
+                    lift.Slide.setTargetPosition(-1550);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
+                .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
-                .waitSeconds(.5)
+                .waitSeconds(2)
+                .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() -> {
                     lift.Slide.getCurrentPosition();
-                    lift.Slide.setTargetPosition(1350);
+                    lift.Slide.setTargetPosition(800);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeRight(17)
                 .build();
 
         TrajectorySequence traj_middle = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(0, () -> {
                     lift.angleServo.setPosition(DEPO_ANGLE);
-                    lift.liftLeft.getCurrentPosition();
-                    lift.liftRight.getCurrentPosition();
-                    lift.liftRight.setTargetPosition(3100);
                     lift.liftLeft.setTargetPosition(3100);
+                    lift.liftRight.setTargetPosition(3100);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
                     lift.liftRight.setPower(1);
                 })
-                .lineToSplineHeading(new Pose2d(10,-34,(Math.toRadians(90))))
+                .lineToSplineHeading(new Pose2d(10,-36,(Math.toRadians(90))))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
                 .back(6)
-                .lineToSplineHeading(new Pose2d(43,-36,(Math.toRadians(0))))
+                .lineToSplineHeading(new Pose2d(40,-36,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
@@ -173,22 +192,20 @@ public class redRightRR extends LinearOpMode {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
                 .waitSeconds(2)
+                .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeRight(17)
                 .build();
 
         TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
                 .addTemporalMarker(0, () -> {
                     lift.angleServo.setPosition(DEPO_ANGLE);
-                    lift.liftLeft.getCurrentPosition();
-                    lift.liftRight.getCurrentPosition();
-                    lift.liftRight.setTargetPosition(3100);
-                    lift.liftLeft.setTargetPosition(3100);
+                    lift.liftLeft.setTargetPosition(3200);
+                    lift.liftRight.setTargetPosition(3200);
                     lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.liftLeft.setPower(1);
@@ -196,116 +213,79 @@ public class redRightRR extends LinearOpMode {
                 })
                 .forward(2)
                 .strafeRight(2)
-                .lineToSplineHeading(new Pose2d(10,-32,(Math.toRadians(180))))
+                .lineToSplineHeading(new Pose2d(7,-36,(Math.toRadians(180))))
                 .waitSeconds(2)
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.leftServo.setPosition(LEFT_OPEN);
                 })
                 .waitSeconds(2)
-                .back(6)
-                .lineToSplineHeading(new Pose2d(43,-31,(Math.toRadians(0))))
+                .forward(4)
+                .back(10)
+                .lineToSplineHeading(new Pose2d(40,-29,(Math.toRadians(0))))
                 .UNSTABLE_addTemporalMarkerOffset(0, () -> {
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(-1550);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .waitSeconds(2)
+                .waitSeconds(2)//
                 .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
                     lift.rightServo.setPosition(RIGHT_OPEN);
                 })
                 .waitSeconds(2)
+                .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
                     lift.Slide.setTargetPosition(800);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
-                .strafeRight(26)
                 .build();
-        TrajectorySequence traj_To_Stack = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                .addTemporalMarker(0, () -> {
-                    lift.angleServo.setPosition(DOWN_ANGLE);
-                    lift.liftLeft.getCurrentPosition();
-                    lift.liftRight.getCurrentPosition();
-                    lift.liftRight.setTargetPosition(-3100);
-                    lift.liftLeft.setTargetPosition(-3100);
-                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    lift.liftLeft.setPower(1);
-                    lift.liftRight.setPower(1);
-                })
-                .lineToSplineHeading(new Pose2d(-50,38, (Math.toRadians(270))))
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    lift.liftLeft.getCurrentPosition();
-                    lift.liftRight.getCurrentPosition();
-                    lift.liftRight.setTargetPosition(200);
-                    lift.liftLeft.setTargetPosition(200);
-                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    lift.liftLeft.setPower(1);
-                    lift.liftRight.setPower(1);
-                    lift.Intake.setPower(-1);
 
-                })
-                .forward(20)
-                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
-                    if(rightColorSensorV2. {
-                        currentState = State.TRAJ_TO_BACKDROP;
+        TrajectorySequence cycle_pixels = drive.trajectorySequenceBuilder(startPose)
+                .back(2)
+                .lineToSplineHeading(new Pose2d(0,0,(Math.toRadians(0)))) //move to the pixel stack
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    if (getBrightnessLeft() > WHITE_THRESHOLD && getBrightnessRight() > WHITE_THRESHOLD) { //if pixel is detected by both sensors
+                        //pick up pixels
                     }
                 })
-
-
-
                 .build();
-        TrajectorySequence traj_To_Backdrop = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-
-
-
-
-
-                .build();
-
         waitForStart();
+
+
+
 
 
         // Save more CPU resources when camera is no longer needed.
 
         while (opModeIsActive()  && !isStopRequested()) {
-            Color.RGBToHSV((int) (rightColorSensorV2.red() * SCALE_FACTOR),
-                    (int) (rightColorSensorV2.green() * SCALE_FACTOR),
-                    (int) (rightColorSensorV2.blue() * SCALE_FACTOR),
-                    hsvValues);
-            Color.RGBToHSV((int) (leftColorSensorV2.red() * SCALE_FACTOR),
-                    (int) (leftColorSensorV2.green() * SCALE_FACTOR),
-                    (int) (leftColorSensorV2.blue() * SCALE_FACTOR),
-                    hsvValues);
             switch (detector.getLocation()) {
                 case LEFT:
                     currentState = State.TRAJ_LEFT;
-
+                    drive.followTrajectorySequenceAsync(traj_left);
                     break;
 
                 case MIDDLE:
                     currentState = State.TRAJ_MIDDLE;
+                    drive.followTrajectorySequenceAsync(traj_middle);
 
                     break;
                 case RIGHT:
                     currentState = State.TRAJ_RIGHT;
-
-
+                    drive.followTrajectorySequenceAsync(traj_right);
                     break;
             }
             //
             switch (currentState) {
                 case TRAJ_LEFT:
-                    drive.followTrajectorySequenceAsync(traj_left);
+                    drive.followTrajectorySequence(traj_left);
                     // Check if the drive class isn't busy
                     // `isBusy() == true` while it's following the trajectory
                     // Once `isBusy() == false`, the trajectory follower signals that it is finished
                     // We move on to the next state
                     // Make sure we use the async follow function
-                    if (!drive.isBusy()) {
+                    if (getRuntime() < 22) { //if we have time for another cycle and parking
                         currentState = State.IDLE;
                     }
                     break;
@@ -318,7 +298,7 @@ public class redRightRR extends LinearOpMode {
                     }
                     break;
                 case TRAJ_MIDDLE:
-                    drive.followTrajectorySequenceAsync(traj_middle);
+                    drive.followTrajectorySequence(traj_middle);
                     // Check if the drive class is busy turning
                     // If not, move onto the next state, TRAJECTORY_3, once finished
                     if (!drive.isBusy()) {
@@ -361,8 +341,7 @@ public class redRightRR extends LinearOpMode {
         private DcMotor liftRight = null;
 
 
-        //Sensors
-
+        //Servos
 
 
         //servos
@@ -395,12 +374,10 @@ public class redRightRR extends LinearOpMode {
             liftRight = hardwareMap.get(DcMotor.class, "liftRight");
 
 
-
             leftServo = hardwareMap.get(Servo.class, "leftServo");
             rightServo = hardwareMap.get(Servo.class, "rightServo");
             angleServo = hardwareMap.get(Servo.class, "angleServo");
             planeServo = hardwareMap.get(Servo.class, "planeservo");
-
             Intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             Slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
