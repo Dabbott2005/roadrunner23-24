@@ -296,6 +296,7 @@ public class redRightRR extends LinearOpMode {
 
                     break;
             }
+            //
             switch (currentState) {
                 case TRAJ_LEFT:
                     drive.followTrajectorySequenceAsync(traj_left);
