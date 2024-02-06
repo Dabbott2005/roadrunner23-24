@@ -152,10 +152,10 @@ public class Teleop_NEW extends LinearOpMode {
                 sleep(500);
                 planeServo.setPosition(0);
             }
-            while(gamepad1.y){
+            if(gamepad1.y){
                 hangServo.setPosition(0.1);
             }
-            while (gamepad1.x) {
+            if ((!gamepad1.y) || (gamepad1.x)) {
                 hangServo.setPosition(.5);
             }
 

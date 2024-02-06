@@ -70,6 +70,8 @@ public class redRightRR extends LinearOpMode {
 
         TRAJ_TO_BACKDROP,
 
+        TRAJ_TO_PARK,
+
         IDLE,            // Our bot will enter the IDLE state when done
     }
 
@@ -155,12 +157,23 @@ public class redRightRR extends LinearOpMode {
                 })
                 .waitSeconds(2)
                 .back(3)
-                .UNSTABLE_addTemporalMarkerOffset(0,() -> {
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
-                    lift.Slide.setTargetPosition(800);
+                    lift.Slide.setTargetPosition(1540);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
+                .back(10)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.angleServo.setPosition(DOWN_ANGLE);
+                    lift.liftLeft.setTargetPosition(-3100);
+                    lift.liftRight.setTargetPosition(-3100);
+                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftLeft.setPower(.7);
+                    lift.liftRight.setPower(.7);
+                })
+                .strafeLeft(15)
                 .build();
 
         TrajectorySequence traj_middle = drive.trajectorySequenceBuilder(startPose)
@@ -195,10 +208,21 @@ public class redRightRR extends LinearOpMode {
                 .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
-                    lift.Slide.setTargetPosition(800);
+                    lift.Slide.setTargetPosition(1540);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
+                .back(10)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.angleServo.setPosition(DOWN_ANGLE);
+                    lift.liftLeft.setTargetPosition(-3100);
+                    lift.liftRight.setTargetPosition(-3100);
+                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftLeft.setPower(.7);
+                    lift.liftRight.setPower(.7);
+                })
+                .strafeLeft(15)
                 .build();
 
         TrajectorySequence traj_left = drive.trajectorySequenceBuilder(startPose)
@@ -236,25 +260,81 @@ public class redRightRR extends LinearOpMode {
                 .back(3)
                 .UNSTABLE_addTemporalMarkerOffset(0,() ->{
                     lift.Slide.getCurrentPosition();
-                    lift.Slide.setTargetPosition(800);
+                    lift.Slide.setTargetPosition(1540);
                     lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     lift.Slide.setPower(1);
                 })
+                .back(10)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.angleServo.setPosition(DOWN_ANGLE);
+                    lift.liftLeft.setTargetPosition(-3100);
+                    lift.liftRight.setTargetPosition(-3100);
+                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftLeft.setPower(.7);
+                    lift.liftRight.setPower(.7);
+                })
+                .strafeLeft(15)
                 .build();
 
-        TrajectorySequence cycle_pixels = drive.trajectorySequenceBuilder(startPose)
-                .back(2)
-                .lineToSplineHeading(new Pose2d(0,0,(Math.toRadians(0)))) //move to the pixel stack
-                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+        TrajectorySequence cycle_pixels = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineToSplineHeading(new Pose2d(-50,50,(Math.toRadians(270)))) //move to the pixel stack
+                .strafeLeft(5)
+                .strafeRight(10)
+                .strafeLeft(10)
+                .strafeRight(10)
+                .addTemporalMarker(0,() ->{
+                    lift.Intake.setPower(-1);
                     if (getBrightnessLeft() > WHITE_THRESHOLD && getBrightnessRight() > WHITE_THRESHOLD) { //if pixel is detected by both sensors
+                        lift.Intake.setPower(0);
+                        currentState = State.TRAJ_TO_BACKDROP;
                         //pick up pixels
                     }
                 })
                 .build();
+        TrajectorySequence score_backdrop = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineTo(new Vector2d(-40 , 50))
+                .lineToSplineHeading(new Pose2d(35,50,(Math.toRadians(180)))) //move to the back stage
+                .addTemporalMarker(0, () -> {
+                    lift.angleServo.setPosition(DEPO_ANGLE);
+                    lift.liftLeft.setTargetPosition(3000);
+                    lift.liftRight.setTargetPosition(3000);
+                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftLeft.setPower(1);
+                    lift.liftRight.setPower(1);
+                })
+                .lineToSplineHeading(new Pose2d(40,-36,(Math.toRadians(0))))
+                .UNSTABLE_addTemporalMarkerOffset(0, () -> {
+                    lift.Slide.getCurrentPosition();
+                    lift.Slide.setTargetPosition(-1550);
+                    lift.Slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.Slide.setPower(1);
+                })
+                .waitSeconds(1)
+                .UNSTABLE_addTemporalMarkerOffset(0, ()-> {
+                    lift.rightServo.setPosition(RIGHT_OPEN);
+                    lift.leftServo.setPosition(LEFT_OPEN);
+                })
+                .waitSeconds(2)
+                .back(10)
+                .UNSTABLE_addTemporalMarkerOffset(0,() ->{
+                    lift.angleServo.setPosition(DOWN_ANGLE);
+                    lift.liftLeft.setTargetPosition(-3100);
+                    lift.liftRight.setTargetPosition(-3100);
+                    lift.liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    lift.liftLeft.setPower(.7);
+                    lift.liftRight.setPower(.7);
+                })
+                .strafeLeft(15)
+
+                        .build();
+        TrajectorySequence park = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                .lineTo(new Vector2d(50,10))
+                        .build();
+
         waitForStart();
-
-
-
 
 
         // Save more CPU resources when camera is no longer needed.
@@ -263,48 +343,80 @@ public class redRightRR extends LinearOpMode {
             switch (detector.getLocation()) {
                 case LEFT:
                     currentState = State.TRAJ_LEFT;
-                    drive.followTrajectorySequenceAsync(traj_left);
                     break;
 
                 case MIDDLE:
                     currentState = State.TRAJ_MIDDLE;
-                    drive.followTrajectorySequenceAsync(traj_middle);
 
                     break;
                 case RIGHT:
                     currentState = State.TRAJ_RIGHT;
-                    drive.followTrajectorySequenceAsync(traj_right);
+
                     break;
             }
             //
             switch (currentState) {
                 case TRAJ_LEFT:
-                    drive.followTrajectorySequence(traj_left);
+                    drive.followTrajectorySequenceAsync(traj_left);
                     // Check if the drive class isn't busy
                     // `isBusy() == true` while it's following the trajectory
                     // Once `isBusy() == false`, the trajectory follower signals that it is finished
                     // We move on to the next state
                     // Make sure we use the async follow function
-                    if (getRuntime() < 22) { //if we have time for another cycle and parking
-                        currentState = State.IDLE;
+                    if (getRuntime() < 22 && (!drive.isBusy())) { //if we have time for another cycle and parking
+                        currentState = State.TRAJ_TO_STACK;
+                    } else {
+                        currentState = State.TRAJ_TO_PARK;
                     }
                     break;
                 case TRAJ_RIGHT:
-                    drive.followTrajectorySequence(traj_right);
+                    drive.followTrajectorySequenceAsync(traj_right);
                     // Check if the drive class is busy following the trajectory
                     // Move on to the next state
-                    if (!drive.isBusy()) {
-                        currentState = State.IDLE;
+                    if (getRuntime() < 22 && (!drive.isBusy())) { //if we have time for another cycle and parking
+                        currentState = State.TRAJ_TO_STACK;
+                    } else {
+                        currentState = State.TRAJ_TO_PARK;
+
                     }
-                    break;
                 case TRAJ_MIDDLE:
-                    drive.followTrajectorySequence(traj_middle);
+                    drive.followTrajectorySequenceAsync(traj_middle);
                     // Check if the drive class is busy turning
                     // If not, move onto the next state, TRAJECTORY_3, once finished
+                    if (getRuntime() < 22 && (!drive.isBusy())) { //if we have time for another cycle and parking
+                        currentState = State.TRAJ_TO_STACK;
+                    } else {
+                        currentState = State.TRAJ_TO_PARK;
+                    }
+                    break;
+                case TRAJ_TO_BACKDROP:
+                    drive.followTrajectorySequenceAsync(score_backdrop);
+
+                    if (getRuntime() < 22 && (!drive.isBusy())) { //if we have time for another cycle and parking
+                        currentState = State.TRAJ_TO_STACK;
+                    } else {
+                        currentState = State.TRAJ_TO_PARK;
+                    }
+
+                    break;
+                case TRAJ_TO_STACK:
+                    drive.followTrajectorySequenceAsync(cycle_pixels);
+
+                    if (getRuntime() < 22 && (!drive.isBusy())) { //if we have time for another cycle and parking
+                        currentState = State.TRAJ_TO_BACKDROP;
+                    } else {
+                        currentState = State.TRAJ_TO_PARK;
+                    }
+                    break;
+
+                case TRAJ_TO_PARK:
+                    drive.followTrajectorySequenceAsync(park);
                     if (!drive.isBusy()) {
                         currentState = State.IDLE;
                     }
+
                     break;
+
                 case IDLE:
                     // Do nothing in IDLE
                     // currentState does not change once in IDLE
